@@ -402,6 +402,7 @@ MonoBehaviour:
   - {fileID: 409628460}
   - {fileID: 453004711}
   - {fileID: 439343666}
+  currentLevel: {fileID: 11400000, guid: 68002774292c45b4e86342f0d4fcb780, type: 2}
   tileLength: 300
 --- !u!4 &321962498
 Transform:
@@ -1253,16 +1254,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5948cfa51fb92540b3ff77e858f5482, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectSpawner
+  currentLevel: {fileID: 11400000, guid: 68002774292c45b4e86342f0d4fcb780, type: 2}
   player: {fileID: 2008640051}
-  jumpObstaclePrefab: {fileID: 2255907012009142800, guid: b679b8346a509cc469694c529e6e6433, type: 3}
-  slideObstaclePrefab: {fileID: 8645576779207163817, guid: 53d70dcd380755942918c3c1212cbae9, type: 3}
-  coinPrefab: {fileID: 5871584920262485677, guid: e4aaad571dcefbf4eb23d33b58567c75, type: 3}
   startZ: 20
   spawnStep: 8
-  spawnDistanceAhead: 120
+  spawnDistanceAhead: 100
   laneDistance: 3
-  coinChance: 0.35
-  slideObstacleChance: 0.25
 --- !u!4 &1192591908
 Transform:
   m_ObjectHideFlags: 0
@@ -1982,6 +1979,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eede5fc9fb802d84a9a74fc881cacd68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCollision
+--- !u!1 &2049248663
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2049248665}
+  - component: {fileID: 2049248664}
+  m_Layer: 0
+  m_Name: LevelManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2049248664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2049248663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83588333a95cc2b4f9fdefdedbb3f126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LevelManager
+  levels:
+  - {fileID: 11400000, guid: 68002774292c45b4e86342f0d4fcb780, type: 2}
+  - {fileID: 11400000, guid: 4aa68e6cddd7d5347b07562c530843ed, type: 2}
+  scoreStep: 5
+--- !u!4 &2049248665
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2049248663}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.11384, y: 0.11, z: -0.30299}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2133976843
 GameObject:
   m_ObjectHideFlags: 0
@@ -2044,3 +2089,4 @@ SceneRoots:
   - {fileID: 481420327}
   - {fileID: 1192591908}
   - {fileID: 321962498}
+  - {fileID: 2049248665}

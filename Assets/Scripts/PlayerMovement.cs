@@ -84,44 +84,42 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            if (desiredLane > 0)
-                desiredLane--;
+            if (desiredLane > 0) desiredLane--;
         }
 
         if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if (desiredLane < 2)
-                desiredLane++;
+            if (desiredLane < 2) desiredLane++;
         }
     }
 
     void HandleJumpAndSlideInput()
     {
+        // ZIPLAMA GÜNCELLEMESİ
         if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded && !isSliding)
         {
+            float currentJumpMultiplier = 1f;
+
+            // Seviye verisinden zıplama çarpanını çek
+            if (LevelManager.Instance != null && LevelManager.Instance.GetCurrentLevelData() != null)
+            {
+                currentJumpMultiplier = LevelManager.Instance.GetCurrentLevelData().jumpForceMultiplier;
+            }
+
             Vector3 currentVelocity = rb.linearVelocity;
-            currentVelocity.y = jumpForce;
+            currentVelocity.y = jumpForce * currentJumpMultiplier; // Çarpanı buraya uyguladık
             rb.linearVelocity = currentVelocity;
         }
 
         if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
         {
-            if (isGrounded && !isSliding)
-            {
-                StartSlide();
-            }
+            if (isGrounded && !isSliding) StartSlide();
             else if (!isGrounded)
             {
                 Vector3 currentVelocity = rb.linearVelocity;
-
-                if (currentVelocity.y > 0f)
-                {
-                    currentVelocity.y = 0f;
-                }
-
+                if (currentVelocity.y > 0f) currentVelocity.y = 0f;
                 currentVelocity.y -= fastFallSpeed;
                 rb.linearVelocity = currentVelocity;
-
                 slideQueuedFromAir = true;
             }
         }
@@ -130,13 +128,8 @@ public class PlayerMovement : MonoBehaviour
     void HandleSlideTimer()
     {
         if (!isSliding) return;
-
         slideTimer -= Time.deltaTime;
-
-        if (slideTimer <= 0f)
-        {
-            EndSlide();
-        }
+        if (slideTimer <= 0f) EndSlide();
     }
 
     void HandleForwardAndLaneMovement()
@@ -147,12 +140,7 @@ public class PlayerMovement : MonoBehaviour
         float targetX = (desiredLane - 1) * laneDistance;
         Vector3 currentPosition = rb.position;
 
-        float newX = Mathf.Lerp(
-            currentPosition.x,
-            targetX,
-            laneChangeSpeed * Time.fixedDeltaTime
-        );
-
+        float newX = Mathf.Lerp(currentPosition.x, targetX, laneChangeSpeed * Time.fixedDeltaTime);
         float newZ = currentPosition.z + forwardSpeed * Time.fixedDeltaTime;
 
         Vector3 newPosition = new Vector3(newX, currentPosition.y, newZ);
@@ -162,17 +150,12 @@ public class PlayerMovement : MonoBehaviour
     void HandleBetterJumpPhysics()
     {
         Vector3 velocity = rb.linearVelocity;
-
         if (!isGrounded)
         {
             if (velocity.y < 0f)
-            {
                 velocity.y += Physics.gravity.y * (fallMultiplier - 1f) * Time.fixedDeltaTime;
-            }
             else if (!(Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.UpArrow)))
-            {
                 velocity.y += Physics.gravity.y * (jumpCutMultiplier - 1f) * Time.fixedDeltaTime;
-            }
 
             rb.linearVelocity = velocity;
         }
@@ -191,7 +174,6 @@ public class PlayerMovement : MonoBehaviour
     {
         isSliding = true;
         slideTimer = slideDuration;
-
         capsuleCollider.height = slideColliderHeight;
         capsuleCollider.center = slideColliderCenter;
     }
@@ -199,7 +181,6 @@ public class PlayerMovement : MonoBehaviour
     void EndSlide()
     {
         isSliding = false;
-
         capsuleCollider.height = normalColliderHeight;
         capsuleCollider.center = normalColliderCenter;
     }
@@ -209,29 +190,13 @@ public class PlayerMovement : MonoBehaviour
         if (visualRoot == null) return;
 
         Vector3 targetPosition = isSliding ? slideVisualLocalPosition : normalVisualLocalPosition;
-        Quaternion targetRotation = isSliding
-            ? Quaternion.Euler(slideVisualLocalRotation)
-            : normalVisualLocalRotation;
+        Quaternion targetRotation = isSliding ? Quaternion.Euler(slideVisualLocalRotation) : normalVisualLocalRotation;
         Vector3 targetScale = isSliding ? slideVisualLocalScale : normalVisualLocalScale;
 
         float currentLerpSpeed = isSliding ? slideEnterLerpSpeed : slideExitLerpSpeed;
 
-        visualRoot.localPosition = Vector3.Lerp(
-            visualRoot.localPosition,
-            targetPosition,
-            currentLerpSpeed * Time.deltaTime
-        );
-
-        visualRoot.localRotation = Quaternion.Lerp(
-            visualRoot.localRotation,
-            targetRotation,
-            currentLerpSpeed * Time.deltaTime
-        );
-
-        visualRoot.localScale = Vector3.Lerp(
-            visualRoot.localScale,
-            targetScale,
-            currentLerpSpeed * Time.deltaTime
-        );
+        visualRoot.localPosition = Vector3.Lerp(visualRoot.localPosition, targetPosition, currentLerpSpeed * Time.deltaTime);
+        visualRoot.localRotation = Quaternion.Lerp(visualRoot.localRotation, targetRotation, currentLerpSpeed * Time.deltaTime);
+        visualRoot.localScale = Vector3.Lerp(visualRoot.localScale, targetScale, currentLerpSpeed * Time.deltaTime);
     }
 }

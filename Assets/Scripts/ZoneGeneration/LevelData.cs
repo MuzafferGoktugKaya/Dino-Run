@@ -14,10 +14,14 @@ public class LevelData : ScriptableObject
 
     [Header("Spawn Yükseklikleri")]
     public float coinY = 1f;
-    public float jumpObstacleY = 0.5f;
-    public float slideObstacleY = 2.2f;
+    public float obstacle1Y = 0.5f;
+    public float obstacle2Y = 2.2f;
 
     [Header("Oynanış Ayarları")]
     public float forwardSpeedMultiplier = 1f;
     public float jumpForceMultiplier = 1.0f;
+
+    [Header("Sand Worm Ayarları")]
+    public GameObject wormPrefab;
+    public float wormSpawnChance = 0.15f;
 }

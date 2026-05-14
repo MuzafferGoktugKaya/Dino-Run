@@ -33,9 +33,27 @@ public class ObjectSpawner : MonoBehaviour
         GameObject prefabToSpawn = null;
         float spawnY = 0f;
 
-        if (randomValue < 0.20f) { prefabToSpawn = currentLevel.coinPrefab; spawnY = currentLevel.coinY; }
-        else if (randomValue < 0.40f) { prefabToSpawn = currentLevel.ObstaclePrefab1; spawnY = currentLevel.slideObstacleY; }
-        else if (randomValue < 0.60f) { prefabToSpawn = currentLevel.ObstaclePrefab2; spawnY = currentLevel.jumpObstacleY; }
+        if (currentLevel.wormPrefab != null && Random.value < currentLevel.wormSpawnChance)
+        {
+            prefabToSpawn = currentLevel.wormPrefab;
+            spawnY = 0f; 
+        }
+        else if (randomValue < 0.20f) 
+        { 
+            prefabToSpawn = currentLevel.coinPrefab; 
+            spawnY = currentLevel.coinY; 
+        }
+        else if (randomValue < 0.40f) 
+        { 
+            prefabToSpawn = currentLevel.ObstaclePrefab1; 
+            spawnY = currentLevel.obstacle1Y; 
+        }
+        else if (randomValue < 0.60f) 
+        { 
+            prefabToSpawn = currentLevel.ObstaclePrefab2; 
+
+            spawnY = currentLevel.obstacle2Y; 
+        }
 
         if (prefabToSpawn != null)
         {

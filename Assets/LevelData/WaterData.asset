@@ -18,7 +18,9 @@ MonoBehaviour:
   ObstaclePrefab1: {fileID: 905318158338283086, guid: 9e3e9ce34f0c0c148aa4f2c971c98d65, type: 3}
   ObstaclePrefab2: {fileID: 9186022904789144307, guid: 52fe702729be5364a8469fd08413198a, type: 3}
   coinY: 1
-  jumpObstacleY: 0
-  slideObstacleY: 0
+  obstacle1Y: 0
+  obstacle2Y: 0
   forwardSpeedMultiplier: 1
   jumpForceMultiplier: 0.5
+  wormPrefab: {fileID: 8191177356695025370, guid: 728721fc38cbb1c4a8e3bc82132350e8, type: 3}
+  wormSpawnChance: 0.05

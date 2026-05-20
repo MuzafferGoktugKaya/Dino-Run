@@ -9,11 +9,11 @@ public class LevelManager : MonoBehaviour
     public List<LevelData> levels = new List<LevelData>();
     
     [Header("Transition Settings")]
-    public int scoreStep = 5; // Her 5 skorda bir geçiş
+    public int scoreStep = 5; 
     public Animator fadeAnimator; 
 
     private int currentLevelIndex = 0;
-    private int totalLevelsPassed = 0; // Kaç kez seviye atladığımızı tutar
+    private int totalLevelsPassed = 0; 
     private ObjectSpawner spawner;
     private GroundLooper groundLooper;
 
@@ -34,16 +34,12 @@ public class LevelManager : MonoBehaviour
     {
         if (GameManager.Instance == null || levels.Count == 0) return;
 
-        // Bir sonraki eşik: (geçilen toplam seviye + 1) * scoreStep
         int nextLevelThreshold = (totalLevelsPassed + 1) * scoreStep;
         
         if (GameManager.Instance.score >= nextLevelThreshold)
         {
             totalLevelsPassed++;
-            
-            // MODULO kullanarak index'i döndür: 0, 1, 0, 1...
             currentLevelIndex = (currentLevelIndex + 1) % levels.Count;
-            
             StartNextLevelTransition();
         }
     }
@@ -56,6 +52,19 @@ public class LevelManager : MonoBehaviour
 
     void UpdateSystems(LevelData data)
     {
+        if (data == null) return;
+
+        // >>> YENİ: RUNTIME SKYBOX DEĞİŞTİRME MEKANİZMASI <<<
+        if (data.skyboxMaterial != null)
+        {
+            // Unity'nin global skybox'ını kodla değiştiriyoruz
+            RenderSettings.skybox = data.skyboxMaterial;
+            
+            // Işıklandırma ve yansımaların yeni gökyüzüne göre anında tazelenmesini sağlar
+            DynamicGI.UpdateEnvironment(); 
+        }
+        // >>> ---------------------------------------- <<<
+
         if (spawner != null)
         {
             spawner.currentLevel = data;

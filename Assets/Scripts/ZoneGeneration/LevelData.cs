@@ -6,6 +6,7 @@ public class LevelData : ScriptableObject
     [Header("Görsel Ayarlar")]
     public Material roadMaterial;
     public Material sideMaterial;
+    public Material skyboxMaterial;
 
     [Header("Prefablar")]
     public GameObject coinPrefab;

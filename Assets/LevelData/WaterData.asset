@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelData
   roadMaterial: {fileID: 2100000, guid: 5f58fc42b9c4e2b48bb5371b2b3b31db, type: 2}
   sideMaterial: {fileID: 2100000, guid: 515b33468c62d804d88591d32bbb19a3, type: 2}
+  skyboxMaterial: {fileID: 2100000, guid: b749812e6c5eebc4caf0681cf4b1a23a, type: 2}
   coinPrefab: {fileID: 5871584920262485677, guid: e4aaad571dcefbf4eb23d33b58567c75, type: 3}
   ObstaclePrefab1: {fileID: 905318158338283086, guid: 9e3e9ce34f0c0c148aa4f2c971c98d65, type: 3}
   ObstaclePrefab2: {fileID: 9186022904789144307, guid: 52fe702729be5364a8469fd08413198a, type: 3}

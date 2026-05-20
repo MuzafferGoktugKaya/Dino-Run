@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: b749812e6c5eebc4caf0681cf4b1a23a, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -94,7 +94,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 20201, guid: 0000000000000000f000000000000000, type: 0}
-  m_LightingSettings: {fileID: 0}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: b5c9a801728b1974ca9ada14bb33b296, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -2012,6 +2012,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 68002774292c45b4e86342f0d4fcb780, type: 2}
   - {fileID: 11400000, guid: 4aa68e6cddd7d5347b07562c530843ed, type: 2}
   scoreStep: 5
+  fadeAnimator: {fileID: 0}
 --- !u!4 &2049248665
 Transform:
   m_ObjectHideFlags: 0

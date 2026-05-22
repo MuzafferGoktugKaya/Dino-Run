@@ -119,25 +119,115 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &502480386 stripped
+--- !u!1001 &678314915
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1658175302355074599, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+      propertyPath: m_Name
+      value: AirObstacle
+      objectReference: {fileID: 0}
+    - target: {fileID: 1658175302355074599, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+      propertyPath: m_TagString
+      value: AirObstacle
+      objectReference: {fileID: 0}
+    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+--- !u!1 &943305336
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 1658175302355074599, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
-  m_PrefabInstance: {fileID: 3082771066245240998}
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &502480392
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 943305338}
+  - component: {fileID: 943305337}
+  m_Layer: 0
+  m_Name: Weather_BackwardWind
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &943305337
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 502480386}
+  m_GameObject: {fileID: 943305336}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a1ba9348b6b7dc43a5e5d146fad4094, type: 3}
+  m_Script: {fileID: 11500000, guid: b3bcf2a8b75c9f642874c023dd24e385, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AirObstacle
-  moveSpeed: 8
-  destroyZ: -15
+  m_EditorClassIdentifier: Assembly-CSharp::AirZone.Weather.ConstantWindWeatherEffect
+  displayName: Weather Effect
+  weatherType: 1
+  direction: {x: 0, y: 0, z: -1}
+  strength: 30
+--- !u!4 &943305338
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 943305336}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1174960610}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1117058734
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,7 +240,7 @@ GameObject:
   - component: {fileID: 1117058735}
   m_Layer: 0
   m_Name: AirObstacleSpawner
-  m_TagString: Untagged
+  m_TagString: AirObstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -190,6 +280,71 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1174960607
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1174960610}
+  - component: {fileID: 1174960609}
+  - component: {fileID: 1174960608}
+  m_Layer: 0
+  m_Name: AirWeatherManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1174960608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1174960607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2094d6a8941ed304bb60cc0735d120fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AirZone.Weather.RandomWeatherSelector
+--- !u!114 &1174960609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1174960607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11fc060919f4dd74aa3392c73666b892, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AirZone.Weather.AirWeatherManager
+  weatherEffects:
+  - {fileID: 2027730716}
+  - {fileID: 943305337}
+  selectorBehaviour: {fileID: 1174960608}
+  minChangeInterval: 1
+  maxChangeInterval: 2
+--- !u!4 &1174960610
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1174960607}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2027730717}
+  - {fileID: 943305338}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1411609474
@@ -343,6 +498,7 @@ GameObject:
   - component: {fileID: 1468363908}
   - component: {fileID: 1468363907}
   - component: {fileID: 1468363906}
+  - component: {fileID: 1468363912}
   m_Layer: 0
   m_Name: FlyingDino
   m_TagString: Untagged
@@ -412,7 +568,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -492,6 +648,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1468363912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1468363905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c146dde79b937842af9e9854c0320f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FlyingDinoCollisionHandler
+  maxHealth: 3
 --- !u!1 &1845295830
 GameObject:
   m_ObjectHideFlags: 0
@@ -619,66 +788,54 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
---- !u!1001 &3082771066245240998
-PrefabInstance:
+--- !u!1 &2027730715
+GameObject:
   m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2027730717}
+  - component: {fileID: 2027730716}
+  m_Layer: 0
+  m_Name: Weather_ForwardWind
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2027730716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2027730715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3bcf2a8b75c9f642874c023dd24e385, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AirZone.Weather.ConstantWindWeatherEffect
+  displayName: Weather Effect
+  weatherType: 0
+  direction: {x: 0, y: 0, z: 1}
+  strength: 30
+--- !u!4 &2027730717
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2027730715}
   serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1658175302355074599, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
-      propertyPath: m_Name
-      value: AirObstacle
-      objectReference: {fileID: 0}
-    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1986048376139486406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1658175302355074599, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 502480392}
-  m_SourcePrefab: {fileID: 100100000, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1174960610}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -686,5 +843,6 @@ SceneRoots:
   - {fileID: 1411609477}
   - {fileID: 1845295832}
   - {fileID: 1468363911}
-  - {fileID: 3082771066245240998}
   - {fileID: 1117058736}
+  - {fileID: 678314915}
+  - {fileID: 1174960610}

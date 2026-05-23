@@ -6,6 +6,7 @@ public class AirGrowthController : MonoBehaviour, IAirMeatConsumer
 {
     [Header("Growth State")]
     [SerializeField] private int currentMeatCount = 0;
+    [SerializeField] private int totalMeatCollected = 0;
     [SerializeField] private int currentGrowthStage = 0;
 
     [Header("Growth Rules")]
@@ -16,6 +17,7 @@ public class AirGrowthController : MonoBehaviour, IAirMeatConsumer
     public event Action<int> OnGrowthStageChanged;
 
     public int CurrentMeatCount => currentMeatCount;
+    public int TotalMeatCollected => totalMeatCollected;
     public int CurrentGrowthStage => currentGrowthStage;
     public int MeatNeededPerStage => meatNeededPerStage;
     public int MaxGrowthStage => maxGrowthStage;
@@ -31,10 +33,11 @@ public class AirGrowthController : MonoBehaviour, IAirMeatConsumer
             return;
 
         currentMeatCount += amount;
-
-        Debug.Log($"[AirGrowth] Meat collected: {currentMeatCount}");
+        totalMeatCollected += amount;
 
         TryIncreaseGrowthStage();
+
+        Debug.Log($"[AirGrowth] Collected Total: {totalMeatCollected} | Progress: {GetProgressText()} | Stage: {currentGrowthStage}");
 
         OnMeatChanged?.Invoke(currentMeatCount, GetMeatNeededForNextStage());
     }
@@ -58,6 +61,14 @@ public class AirGrowthController : MonoBehaviour, IAirMeatConsumer
             return 0;
 
         return meatNeededPerStage;
+    }
+
+    private string GetProgressText()
+    {
+        if (currentGrowthStage >= maxGrowthStage)
+            return "MAX";
+
+        return $"{currentMeatCount} / {meatNeededPerStage}";
     }
 
     private void NotifyState()

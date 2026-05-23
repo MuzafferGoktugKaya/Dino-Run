@@ -21,8 +21,6 @@ public class AirMeatCollectible : MonoBehaviour
         isCollected = true;
         meatConsumer.AddMeat(meatAmount);
 
-        Debug.Log($"[AirMeat] Collected meat: {meatAmount}");
-
         Destroy(gameObject);
     }
 }

@@ -13,6 +13,12 @@ public class AirGrowthController : MonoBehaviour, IAirMeatConsumer
     [SerializeField] private int meatNeededPerStage = 3;
     [SerializeField] private int maxGrowthStage = 3;
 
+    [Header("Visual Growth")]
+    [SerializeField] private Transform scaleTarget;
+    [SerializeField] private float scaleIncreasePerStage = 0.15f;
+
+    private Vector3 initialScale;
+
     public event Action<int, int> OnMeatChanged;
     public event Action<int> OnGrowthStageChanged;
 
@@ -22,8 +28,17 @@ public class AirGrowthController : MonoBehaviour, IAirMeatConsumer
     public int MeatNeededPerStage => meatNeededPerStage;
     public int MaxGrowthStage => maxGrowthStage;
 
+    private void Awake()
+    {
+        if (scaleTarget == null)
+            scaleTarget = transform;
+
+        initialScale = scaleTarget.localScale;
+    }
+
     private void Start()
     {
+        ApplyGrowthScale();
         NotifyState();
     }
 
@@ -49,10 +64,21 @@ public class AirGrowthController : MonoBehaviour, IAirMeatConsumer
             currentMeatCount -= meatNeededPerStage;
             currentGrowthStage++;
 
+            ApplyGrowthScale();
+
             Debug.Log($"[AirGrowth] Stage increased: {currentGrowthStage}");
 
             OnGrowthStageChanged?.Invoke(currentGrowthStage);
         }
+    }
+
+    private void ApplyGrowthScale()
+    {
+        if (scaleTarget == null)
+            return;
+
+        float scaleMultiplier = 1f + currentGrowthStage * scaleIncreasePerStage;
+        scaleTarget.localScale = initialScale * scaleMultiplier;
     }
 
     public int GetMeatNeededForNextStage()

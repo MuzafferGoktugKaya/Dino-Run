@@ -40,7 +40,7 @@ public class ObjectSpawner : MonoBehaviour
         }
         else if (randomValue < 0.20f) 
         { 
-            prefabToSpawn = currentLevel.coinPrefab; 
+            prefabToSpawn = GetCoinPrefabForCurrentLevel(); 
             spawnY = currentLevel.coinY; 
         }
         else if (randomValue < 0.40f) 
@@ -67,5 +67,45 @@ public class ObjectSpawner : MonoBehaviour
         GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
         foreach (GameObject obj in obstacles) Destroy(obj);
         currentZ = player.position.z + 15f; 
+    }
+    GameObject GetCoinPrefabForCurrentLevel()
+    {
+        if (currentLevel == null) return null;
+
+        bool hasHellSpecialCoins =
+            currentLevel.hellSpecialCoinChance > 0f &&
+            (currentLevel.hellSpeedCoinPrefab != null || currentLevel.hellJumpCoinPrefab != null);
+
+        if (!hasHellSpecialCoins)
+        {
+            return currentLevel.coinPrefab;
+        }
+
+        if (Random.value > currentLevel.hellSpecialCoinChance)
+        {
+            return currentLevel.coinPrefab;
+        }
+
+        bool canSpawnSpeedCoin = currentLevel.hellSpeedCoinPrefab != null;
+        bool canSpawnJumpCoin = currentLevel.hellJumpCoinPrefab != null;
+
+        if (canSpawnSpeedCoin && canSpawnJumpCoin)
+        {
+            return Random.value < 0.5f
+                ? currentLevel.hellSpeedCoinPrefab
+                : currentLevel.hellJumpCoinPrefab;
+        }
+
+        if (canSpawnSpeedCoin)
+        {
+            return currentLevel.hellSpeedCoinPrefab;
+        }
+
+        if (canSpawnJumpCoin)
+        {
+            return currentLevel.hellJumpCoinPrefab;
+        }
+
+        return currentLevel.coinPrefab;
     }
 }

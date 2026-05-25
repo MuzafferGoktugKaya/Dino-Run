@@ -13,6 +13,11 @@ public class LevelData : ScriptableObject
     public GameObject ObstaclePrefab1;
     public GameObject ObstaclePrefab2;
 
+    [Header("Hell Zone Special Coins")]
+    public GameObject hellSpeedCoinPrefab;
+    public GameObject hellJumpCoinPrefab;
+    [Range(0f, 1f)] public float hellSpecialCoinChance = 0f;
+
     [Header("Spawn Yükseklikleri")]
     public float coinY = 1f;
     public float obstacle1Y = 0.5f;

@@ -155,5 +155,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HellBoostCoin
   scoreValue: 1
   boostType: 0
-  boostMultiplier: 1.5
-  boostDuration: 4
+  boostMultiplier: 1.25
+  boostDuration: 2

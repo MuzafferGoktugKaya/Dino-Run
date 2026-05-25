@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System.Collections;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Forward Movement")]
@@ -39,6 +39,10 @@ public class PlayerMovement : MonoBehaviour
     private bool isSliding;
     private bool slideQueuedFromAir;
     private float slideTimer;
+    private float speedBoostMultiplier = 1f;
+    private float jumpBoostMultiplier = 1f;
+    private Coroutine speedBoostRoutine;
+    private Coroutine jumpBoostRoutine;
 
     private float normalColliderHeight;
     private Vector3 normalColliderCenter;
@@ -107,7 +111,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
             Vector3 currentVelocity = rb.linearVelocity;
-            currentVelocity.y = jumpForce * currentJumpMultiplier; // Çarpanı buraya uyguladık
+            currentVelocity.y = jumpForce * currentJumpMultiplier * jumpBoostMultiplier; // Çarpanı buraya uyguladık
             rb.linearVelocity = currentVelocity;
         }
 
@@ -141,7 +145,15 @@ public class PlayerMovement : MonoBehaviour
         Vector3 currentPosition = rb.position;
 
         float newX = Mathf.Lerp(currentPosition.x, targetX, laneChangeSpeed * Time.fixedDeltaTime);
-        float newZ = currentPosition.z + forwardSpeed * Time.fixedDeltaTime;
+        float levelSpeedMultiplier = 1f;
+
+        if (LevelManager.Instance != null && LevelManager.Instance.GetCurrentLevelData() != null)
+        {
+            levelSpeedMultiplier = LevelManager.Instance.GetCurrentLevelData().forwardSpeedMultiplier;
+        }
+
+        float finalForwardSpeed = forwardSpeed * levelSpeedMultiplier * speedBoostMultiplier;
+        float newZ = currentPosition.z + finalForwardSpeed * Time.fixedDeltaTime;
 
         Vector3 newPosition = new Vector3(newX, currentPosition.y, newZ);
         rb.MovePosition(newPosition);
@@ -198,5 +210,40 @@ public class PlayerMovement : MonoBehaviour
         visualRoot.localPosition = Vector3.Lerp(visualRoot.localPosition, targetPosition, currentLerpSpeed * Time.deltaTime);
         visualRoot.localRotation = Quaternion.Lerp(visualRoot.localRotation, targetRotation, currentLerpSpeed * Time.deltaTime);
         visualRoot.localScale = Vector3.Lerp(visualRoot.localScale, targetScale, currentLerpSpeed * Time.deltaTime);
+    }
+    public void ApplyTemporarySpeedBoost(float multiplier, float duration)
+    {
+        if (speedBoostRoutine != null)
+        {
+            StopCoroutine(speedBoostRoutine);
+        }
+
+        speedBoostRoutine = StartCoroutine(SpeedBoostCoroutine(multiplier, duration));
+    }
+
+    public void ApplyTemporaryJumpBoost(float multiplier, float duration)
+    {
+        if (jumpBoostRoutine != null)
+        {
+            StopCoroutine(jumpBoostRoutine);
+        }
+
+        jumpBoostRoutine = StartCoroutine(JumpBoostCoroutine(multiplier, duration));
+    }
+
+    private IEnumerator SpeedBoostCoroutine(float multiplier, float duration)
+    {
+        speedBoostMultiplier = multiplier;
+        yield return new WaitForSeconds(duration);
+        speedBoostMultiplier = 1f;
+        speedBoostRoutine = null;
+    }
+
+    private IEnumerator JumpBoostCoroutine(float multiplier, float duration)
+    {
+        jumpBoostMultiplier = multiplier;
+        yield return new WaitForSeconds(duration);
+        jumpBoostMultiplier = 1f;
+        jumpBoostRoutine = null;
     }
 }

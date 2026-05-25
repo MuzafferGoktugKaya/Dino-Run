@@ -54,6 +54,13 @@ public class LevelManager : MonoBehaviour
     {
         if (data == null) return;
 
+        // Yeni level verilerine göre oyuncunun hız ve zıplama güçlendiricilerini sıfırlıyoruz
+        PlayerMovement playerMovement = Object.FindFirstObjectByType<PlayerMovement>();
+        if (playerMovement != null)
+        {
+            playerMovement.ResetTemporaryBoosts();
+        }
+
         // >>> YENİ: RUNTIME SKYBOX DEĞİŞTİRME MEKANİZMASI <<<
         if (data.skyboxMaterial != null)
         {

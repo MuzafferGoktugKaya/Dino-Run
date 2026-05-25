@@ -246,4 +246,21 @@ public class PlayerMovement : MonoBehaviour
         jumpBoostMultiplier = 1f;
         jumpBoostRoutine = null;
     }
+    public void ResetTemporaryBoosts()
+    {
+        if (speedBoostRoutine != null)
+        {
+            StopCoroutine(speedBoostRoutine);
+            speedBoostRoutine = null;
+        }
+
+        if (jumpBoostRoutine != null)
+        {
+            StopCoroutine(jumpBoostRoutine);
+            jumpBoostRoutine = null;
+        }
+
+        speedBoostMultiplier = 1f;
+        jumpBoostMultiplier = 1f;
+    }
 }

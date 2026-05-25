@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ef8d11a808a10b4387d9ede3dc82cdc, type: 3}
   m_Name: HellData
   m_EditorClassIdentifier: Assembly-CSharp::LevelData
-  roadMaterial: {fileID: 2100000, guid: 5f58fc42b9c4e2b48bb5371b2b3b31db, type: 2}
-  sideMaterial: {fileID: 2100000, guid: 515b33468c62d804d88591d32bbb19a3, type: 2}
+  roadMaterial: {fileID: 2100000, guid: 005da8ed61cbdaa418fac6a60aa53bbe, type: 2}
+  sideMaterial: {fileID: 2100000, guid: e8d7bd3d829746342967586eb47706de, type: 2}
   skyboxMaterial: {fileID: 0}
   coinPrefab: {fileID: 5871584920262485677, guid: e4aaad571dcefbf4eb23d33b58567c75, type: 3}
   ObstaclePrefab1: {fileID: 905318158338283086, guid: 9e3e9ce34f0c0c148aa4f2c971c98d65, type: 3}

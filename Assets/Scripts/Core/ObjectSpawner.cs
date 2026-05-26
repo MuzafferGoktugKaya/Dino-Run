@@ -11,12 +11,20 @@ public class ObjectSpawner : MonoBehaviour
 
     private float currentZ;
 
-    void Start() { currentZ = startZ; }
-    void Update() { SpawnUntilAhead(); }
+    void Start()
+    {
+        currentZ = startZ;
+    }
+
+    void Update()
+    {
+        SpawnUntilAhead();
+    }
 
     void SpawnUntilAhead()
     {
         if (player == null || currentLevel == null) return;
+
         while (currentZ < player.position.z + spawnDistanceAhead)
         {
             SpawnNext();
@@ -36,41 +44,43 @@ public class ObjectSpawner : MonoBehaviour
         if (currentLevel.wormPrefab != null && Random.value < currentLevel.wormSpawnChance)
         {
             prefabToSpawn = currentLevel.wormPrefab;
-            spawnY = 0f; 
+            spawnY = 0f;
         }
-        else if (randomValue < 0.20f) 
-        { 
-            prefabToSpawn = GetCoinPrefabForCurrentLevel(); 
-            spawnY = currentLevel.coinY; 
+        else if (randomValue < 0.20f)
+        {
+            prefabToSpawn = GetCoinPrefabForCurrentLevel();
+            spawnY = currentLevel.coinY;
         }
-        else if (randomValue < 0.40f) 
-        { 
-            prefabToSpawn = currentLevel.ObstaclePrefab1; 
-            spawnY = currentLevel.obstacle1Y; 
+        else if (randomValue < 0.40f)
+        {
+            prefabToSpawn = currentLevel.ObstaclePrefab1;
+            spawnY = currentLevel.obstacle1Y;
         }
-        else if (randomValue < 0.60f) 
-        { 
-            prefabToSpawn = currentLevel.ObstaclePrefab2; 
-
-            spawnY = currentLevel.obstacle2Y; 
+        else if (randomValue < 0.60f)
+        {
+            prefabToSpawn = currentLevel.ObstaclePrefab2;
+            spawnY = currentLevel.obstacle2Y;
         }
 
         if (prefabToSpawn != null)
         {
             GameObject go = Instantiate(prefabToSpawn, new Vector3(laneX, spawnY, currentZ), Quaternion.identity);
-            go.tag = "Obstacle"; 
+            go.tag = "Obstacle";
         }
     }
 
-    public void ClearExistingObstacles()
-    {
-        GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
-        foreach (GameObject obj in obstacles) Destroy(obj);
-        currentZ = player.position.z + 15f; 
-    }
     GameObject GetCoinPrefabForCurrentLevel()
     {
         if (currentLevel == null) return null;
+
+        bool hasNegativeCoin =
+            currentLevel.hellNegativeCoinChance > 0f &&
+            currentLevel.hellNegativeCoinPrefab != null;
+
+        if (hasNegativeCoin && Random.value < currentLevel.hellNegativeCoinChance)
+        {
+            return currentLevel.hellNegativeCoinPrefab;
+        }
 
         bool hasHellSpecialCoins =
             currentLevel.hellSpecialCoinChance > 0f &&
@@ -107,5 +117,20 @@ public class ObjectSpawner : MonoBehaviour
         }
 
         return currentLevel.coinPrefab;
+    }
+
+    public void ClearExistingObstacles()
+    {
+        GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
+
+        foreach (GameObject obj in obstacles)
+        {
+            Destroy(obj);
+        }
+
+        if (player != null)
+        {
+            currentZ = player.position.z + 15f;
+        }
     }
 }

@@ -16,7 +16,9 @@ public class LevelData : ScriptableObject
     [Header("Hell Zone Special Coins")]
     public GameObject hellSpeedCoinPrefab;
     public GameObject hellJumpCoinPrefab;
+    public GameObject hellNegativeCoinPrefab;
     [Range(0f, 1f)] public float hellSpecialCoinChance = 0f;
+    [Range(0f, 1f)] public float hellNegativeCoinChance = 0f;
 
     [Header("Spawn Yükseklikleri")]
     public float coinY = 1f;

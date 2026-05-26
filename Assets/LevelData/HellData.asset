@@ -20,7 +20,7 @@ MonoBehaviour:
   ObstaclePrefab2: {fileID: 8645576779207163817, guid: 2db99aebff8eb1545b6c0ea32b05ff0a, type: 3}
   hellSpeedCoinPrefab: {fileID: 5871584920262485677, guid: 058fbe2050ed21d45b8838fb18e14b9a, type: 3}
   hellJumpCoinPrefab: {fileID: 5871584920262485677, guid: 76be6cd4fda04db469f64486b04d0513, type: 3}
-  hellSpecialCoinChance: 1
+  hellSpecialCoinChance: 0.363
   coinY: 1
   obstacle1Y: 0.5
   obstacle2Y: 2.2

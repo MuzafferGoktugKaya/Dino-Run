@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,12 +6,7 @@ public class AirStaminaHud : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private AirStaminaController staminaController;
-    [SerializeField] private Slider staminaSlider;
-    [SerializeField] private TMP_Text staminaText;
-
-    [Header("Text")]
-    [SerializeField] private string label = "STAMINA";
-    [SerializeField] private bool showLabel = true;
+    [SerializeField] private Image staminaFillImage;
 
     private void Awake()
     {
@@ -55,17 +49,9 @@ public class AirStaminaHud : MonoBehaviour
     {
         float normalized = maxStamina <= 0f ? 0f : currentStamina / maxStamina;
 
-        if (staminaSlider != null)
+        if (staminaFillImage != null)
         {
-            staminaSlider.minValue = 0f;
-            staminaSlider.maxValue = 1f;
-            staminaSlider.value = normalized;
-        }
-
-        if (staminaText != null)
-        {
-            int displayedStamina = Mathf.CeilToInt(currentStamina);
-            staminaText.text = showLabel ? $"{label} {displayedStamina}" : displayedStamina.ToString();
+            staminaFillImage.fillAmount = normalized;
         }
     }
 }

@@ -16,7 +16,7 @@ public class AirStaminaController : MonoBehaviour
     [SerializeField] private float regenDelayAfterUse = 0.6f;
 
     private float currentStamina;
-    private float lastSpendTime = -999f;
+    private float lastSpendTime = float.NegativeInfinity;
 
     public event Action<float, float> OnStaminaChanged;
 
@@ -63,6 +63,32 @@ public class AirStaminaController : MonoBehaviour
 
         NotifyStaminaChanged();
         return true;
+    }
+
+    public void Restore(float amount)
+    {
+        if (amount <= 0f)
+        {
+            return;
+        }
+
+        currentStamina = Mathf.Min(maxStamina, currentStamina + amount);
+        NotifyStaminaChanged();
+
+        Debug.Log($"[AirStamina] Restored {amount} stamina. Current: {currentStamina:F0}/{maxStamina:F0}");
+    }
+
+    public void Drain(float amount)
+    {
+        if (amount <= 0f)
+        {
+            return;
+        }
+
+        currentStamina = Mathf.Max(0f, currentStamina - amount);
+        NotifyStaminaChanged();
+
+        Debug.Log($"[AirStamina] Drained {amount} stamina. Current: {currentStamina:F0}/{maxStamina:F0}");
     }
 
     private void RegenerateStamina()

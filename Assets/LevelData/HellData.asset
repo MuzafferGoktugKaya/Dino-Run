@@ -28,5 +28,5 @@ MonoBehaviour:
   obstacle2Y: 2.2
   forwardSpeedMultiplier: 1
   jumpForceMultiplier: 1
-  wormPrefab: {fileID: 0}
+  wormPrefab: {fileID: 2970420324578064896, guid: fd132d79e14fc814f812e55ca7814262, type: 3}
   wormSpawnChance: 0

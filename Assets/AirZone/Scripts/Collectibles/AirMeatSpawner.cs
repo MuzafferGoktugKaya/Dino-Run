@@ -3,8 +3,17 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class AirMeatSpawner : MonoBehaviour
 {
-    [Header("Meat")]
-    [SerializeField] private GameObject meatPrefab;
+    [System.Serializable]
+    private class MeatSpawnOption
+    {
+        public GameObject prefab;
+
+        [Min(0f)]
+        public float weight = 1f;
+    }
+
+    [Header("Meat Variants")]
+    [SerializeField] private MeatSpawnOption[] meatOptions;
 
     [Header("Spawn Timing")]
     [SerializeField] private float spawnInterval = 2.5f;
@@ -42,20 +51,68 @@ public class AirMeatSpawner : MonoBehaviour
 
     private void SpawnMeat()
     {
-        if (meatPrefab == null)
+        GameObject selectedPrefab = SelectMeatPrefab();
+
+        if (selectedPrefab == null)
         {
-            Debug.LogWarning("[AirMeatSpawner] Meat prefab is not assigned.");
             return;
         }
 
-        int lane = Random.Range(minLane, maxLane + 1);
-        int heightLevel = Random.Range(minHeightLevel, maxHeightLevel + 1);
+        int lane = UnityEngine.Random.Range(minLane, maxLane + 1);
+        int heightLevel = UnityEngine.Random.Range(minHeightLevel, maxHeightLevel + 1);
 
         float spawnX = lane * laneDistance;
         float spawnY = baseHeight + heightLevel * heightStep;
 
         Vector3 spawnPosition = new Vector3(spawnX, spawnY, spawnZ);
 
-        Instantiate(meatPrefab, spawnPosition, Quaternion.identity);
+        Instantiate(selectedPrefab, spawnPosition, Quaternion.identity);
+    }
+
+    private GameObject SelectMeatPrefab()
+    {
+        if (meatOptions == null || meatOptions.Length == 0)
+        {
+            Debug.LogWarning("[AirMeatSpawner] No meat spawn options assigned.");
+            return null;
+        }
+
+        float totalWeight = 0f;
+
+        foreach (MeatSpawnOption option in meatOptions)
+        {
+            if (option == null || option.prefab == null || option.weight <= 0f)
+            {
+                continue;
+            }
+
+            totalWeight += option.weight;
+        }
+
+        if (totalWeight <= 0f)
+        {
+            Debug.LogWarning("[AirMeatSpawner] Total meat spawn weight must be greater than zero.");
+            return null;
+        }
+
+        float randomValue = UnityEngine.Random.Range(0f, totalWeight);
+        float currentWeight = 0f;
+
+        foreach (MeatSpawnOption option in meatOptions)
+        {
+            if (option == null || option.prefab == null || option.weight <= 0f)
+            {
+                continue;
+            }
+
+            currentWeight += option.weight;
+
+            if (randomValue <= currentWeight)
+            {
+                return option.prefab;
+            }
+        }
+
+        return null;
     }
 }

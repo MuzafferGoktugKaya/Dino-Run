@@ -1569,7 +1569,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a9278c8b43462f4ea619861f5398b36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AirMeatSpawner
-  meatPrefab: {fileID: 4377385847731375313, guid: 2f5eeb1d603d4504fabf436f83584263, type: 3}
+  meatOptions:
+  - prefab: {fileID: 4377385847731375313, guid: dd81531c0dd34fd469a8dd091d691506, type: 3}
+    weight: 20
+  - prefab: {fileID: 4377385847731375313, guid: 84202efafd2acc84d972a89e91ca4d1d, type: 3}
+    weight: 65
+  - prefab: {fileID: 4377385847731375313, guid: 1a72a6495c3b4b74b96a194041c2ea73, type: 3}
+    weight: 15
   spawnInterval: 2.5
   initialDelay: 1
   spawnZ: 25

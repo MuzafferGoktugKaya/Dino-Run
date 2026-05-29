@@ -14,6 +14,7 @@ public class AirObstacle : MonoBehaviour
     [SerializeField] private float minimumMoveSpeed = 1f;
 
     private AirWeatherManager weatherManager;
+    private float difficultySpeedMultiplier = 1f;
 
     private void Awake()
     {
@@ -32,21 +33,28 @@ public class AirObstacle : MonoBehaviour
         }
     }
 
+    public void SetDifficultySpeedMultiplier(float multiplier)
+    {
+        difficultySpeedMultiplier = Mathf.Max(0f, multiplier);
+    }
+
     private float GetWeatherAdjustedSpeed()
     {
         float finalMoveSpeed = moveSpeed;
 
-        if (weatherManager == null || weatherManager.CurrentEffect == null)
-            return finalMoveSpeed;
+        if (weatherManager != null && weatherManager.CurrentEffect != null)
+        {
+            if (weatherManager.CurrentEffect.Type == AirWeatherType.ForwardWind)
+            {
+                finalMoveSpeed += forwardWindSpeedBonus;
+            }
+            else if (weatherManager.CurrentEffect.Type == AirWeatherType.BackwardWind)
+            {
+                finalMoveSpeed -= backwardWindSpeedPenalty;
+            }
+        }
 
-        if (weatherManager.CurrentEffect.Type == AirWeatherType.ForwardWind)
-        {
-            finalMoveSpeed += forwardWindSpeedBonus;
-        }
-        else if (weatherManager.CurrentEffect.Type == AirWeatherType.BackwardWind)
-        {
-            finalMoveSpeed -= backwardWindSpeedPenalty;
-        }
+        finalMoveSpeed *= difficultySpeedMultiplier;
 
         return Mathf.Max(minimumMoveSpeed, finalMoveSpeed);
     }

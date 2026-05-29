@@ -61,6 +61,31 @@ public class AirMeatSpawner : MonoBehaviour
         }
     }
 
+    public void SetSpawnInterval(float interval)
+    {
+        spawnInterval = Mathf.Max(0.1f, interval);
+    }
+
+    public void SetMeatWeights(params float[] weights)
+    {
+        if (meatOptions == null || weights == null)
+        {
+            return;
+        }
+
+        int count = Mathf.Min(meatOptions.Length, weights.Length);
+
+        for (int i = 0; i < count; i++)
+        {
+            if (meatOptions[i] == null)
+            {
+                continue;
+            }
+
+            meatOptions[i].weight = Mathf.Max(0f, weights[i]);
+        }
+    }
+
     private void SpawnMeat()
     {
         GameObject selectedPrefab = SelectMeatPrefab();

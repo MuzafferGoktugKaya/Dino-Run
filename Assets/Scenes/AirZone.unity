@@ -256,6 +256,58 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 72039177}
   m_CullTransparentMesh: 1
+--- !u!1 &225864754
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 225864756}
+  - component: {fileID: 225864755}
+  m_Layer: 0
+  m_Name: AirObjectPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &225864755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225864754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9efef4735eec5a045905895338042a40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AirObjectPool
+  poolEntries:
+  - prefab: {fileID: 4377385847731375313, guid: dd81531c0dd34fd469a8dd091d691506, type: 3}
+    prewarmCount: 3
+  - prefab: {fileID: 4377385847731375313, guid: 84202efafd2acc84d972a89e91ca4d1d, type: 3}
+    prewarmCount: 8
+  - prefab: {fileID: 4377385847731375313, guid: 1a72a6495c3b4b74b96a194041c2ea73, type: 3}
+    prewarmCount: 3
+  pooledParent: {fileID: 0}
+--- !u!4 &225864756
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225864754}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &572843013
 GameObject:
   m_ObjectHideFlags: 0
@@ -1576,6 +1628,8 @@ MonoBehaviour:
     weight: 65
   - prefab: {fileID: 4377385847731375313, guid: 1a72a6495c3b4b74b96a194041c2ea73, type: 3}
     weight: 15
+  objectPool: {fileID: 225864755}
+  useObjectPool: 1
   spawnInterval: 2.5
   initialDelay: 1
   spawnZ: 25
@@ -2329,3 +2383,4 @@ SceneRoots:
   - {fileID: 1497230377}
   - {fileID: 572843017}
   - {fileID: 1218584758}
+  - {fileID: 225864756}

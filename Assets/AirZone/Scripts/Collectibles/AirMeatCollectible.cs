@@ -19,6 +19,11 @@ public class AirMeatCollectible : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        isCollected = false;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (isCollected)
@@ -36,7 +41,7 @@ public class AirMeatCollectible : MonoBehaviour
 
         if (destroyAfterCollect)
         {
-            Destroy(gameObject);
+            ReturnToPoolOrDestroy();
         }
     }
 
@@ -57,6 +62,17 @@ public class AirMeatCollectible : MonoBehaviour
 
             meatEffect.Apply(collector);
         }
+    }
+
+    private void ReturnToPoolOrDestroy()
+    {
+        if (TryGetComponent(out AirPooledObject pooledObject))
+        {
+            pooledObject.ReturnToPool();
+            return;
+        }
+
+        Destroy(gameObject);
     }
 
     private bool CanCollectorReceiveMeat(Collider collectorCollider)

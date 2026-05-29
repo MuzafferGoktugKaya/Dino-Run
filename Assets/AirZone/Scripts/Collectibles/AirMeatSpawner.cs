@@ -15,6 +15,10 @@ public class AirMeatSpawner : MonoBehaviour
     [Header("Meat Variants")]
     [SerializeField] private MeatSpawnOption[] meatOptions;
 
+    [Header("Object Pool")]
+    [SerializeField] private AirObjectPool objectPool;
+    [SerializeField] private bool useObjectPool = true;
+
     [Header("Spawn Timing")]
     [SerializeField] private float spawnInterval = 2.5f;
     [SerializeField] private float initialDelay = 1f;
@@ -32,6 +36,14 @@ public class AirMeatSpawner : MonoBehaviour
     [SerializeField] private int maxHeightLevel = 2;
 
     private float spawnTimer;
+
+    private void Awake()
+    {
+        if (objectPool == null)
+        {
+            objectPool = FindFirstObjectByType<AirObjectPool>();
+        }
+    }
 
     private void Start()
     {
@@ -65,6 +77,12 @@ public class AirMeatSpawner : MonoBehaviour
         float spawnY = baseHeight + heightLevel * heightStep;
 
         Vector3 spawnPosition = new Vector3(spawnX, spawnY, spawnZ);
+
+        if (useObjectPool && objectPool != null)
+        {
+            objectPool.Get(selectedPrefab, spawnPosition, Quaternion.identity);
+            return;
+        }
 
         Instantiate(selectedPrefab, spawnPosition, Quaternion.identity);
     }

@@ -20,10 +20,14 @@ public class AirDifficultyManager : MonoBehaviour
         [Min(0f)] public float alphaWeight = 20f;
         [Min(0f)] public float betaWeight = 65f;
         [Min(0f)] public float gammaWeight = 15f;
+
+        [Header("Player Growth Reward")]
+        [Min(1f)] public float maxStamina = 100f;
     }
 
     [Header("References")]
     [SerializeField] private AirGrowthController growthController;
+    [SerializeField] private AirStaminaController staminaController;
     [SerializeField] private AirObstacleSpawner obstacleSpawner;
     [SerializeField] private AirMeatSpawner meatSpawner;
 
@@ -40,7 +44,8 @@ public class AirDifficultyManager : MonoBehaviour
         meatSpawnInterval = 2.5f,
         alphaWeight = 20f,
         betaWeight = 65f,
-        gammaWeight = 15f
+        gammaWeight = 15f,
+        maxStamina = 100f
     };
 
     [Header("Adult Phase")]
@@ -52,7 +57,8 @@ public class AirDifficultyManager : MonoBehaviour
         meatSpawnInterval = 2.4f,
         alphaWeight = 20f,
         betaWeight = 60f,
-        gammaWeight = 20f
+        gammaWeight = 20f,
+        maxStamina = 115f
     };
 
     [Header("Apex Phase")]
@@ -64,7 +70,8 @@ public class AirDifficultyManager : MonoBehaviour
         meatSpawnInterval = 2.3f,
         alphaWeight = 15f,
         betaWeight = 55f,
-        gammaWeight = 30f
+        gammaWeight = 30f,
+        maxStamina = 130f
     };
 
     private string currentPhaseName;
@@ -109,6 +116,11 @@ public class AirDifficultyManager : MonoBehaviour
         if (growthController == null)
         {
             growthController = FindFirstObjectByType<AirGrowthController>();
+        }
+
+        if (staminaController == null)
+        {
+            staminaController = FindFirstObjectByType<AirStaminaController>();
         }
 
         if (obstacleSpawner == null)
@@ -177,6 +189,11 @@ public class AirDifficultyManager : MonoBehaviour
                 settings.betaWeight,
                 settings.gammaWeight
             );
+        }
+
+        if (staminaController != null)
+        {
+            staminaController.SetMaxStamina(settings.maxStamina);
         }
 
         Debug.Log($"[AirDifficulty] Phase changed to {settings.phaseName}");

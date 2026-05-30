@@ -286,6 +286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AirDifficultyManager
   growthController: {fileID: 814405637}
+  staminaController: {fileID: 1468363914}
   obstacleSpawner: {fileID: 1117058735}
   meatSpawner: {fileID: 1497230376}
   adultStartsAtGrowthStage: 1
@@ -298,6 +299,7 @@ MonoBehaviour:
     alphaWeight: 20
     betaWeight: 65
     gammaWeight: 15
+    maxStamina: 100
   adultPhase:
     phaseName: Adult
     obstacleSpawnInterval: 1.25
@@ -306,6 +308,7 @@ MonoBehaviour:
     alphaWeight: 20
     betaWeight: 60
     gammaWeight: 20
+    maxStamina: 115
   apexPhase:
     phaseName: Apex
     obstacleSpawnInterval: 1.05
@@ -314,6 +317,7 @@ MonoBehaviour:
     alphaWeight: 15
     betaWeight: 55
     gammaWeight: 30
+    maxStamina: 130
 --- !u!4 &161265054
 Transform:
   m_ObjectHideFlags: 0

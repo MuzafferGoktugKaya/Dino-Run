@@ -91,6 +91,27 @@ public class AirStaminaController : MonoBehaviour
         Debug.Log($"[AirStamina] Drained {amount} stamina. Current: {currentStamina:F0}/{maxStamina:F0}");
     }
 
+    public void SetMaxStamina(float newMaxStamina, bool fillAddedCapacity = true)
+    {
+        newMaxStamina = Mathf.Max(1f, newMaxStamina);
+
+        float previousMaxStamina = maxStamina;
+        float addedCapacity = newMaxStamina - previousMaxStamina;
+
+        maxStamina = newMaxStamina;
+
+        if (fillAddedCapacity && addedCapacity > 0f)
+        {
+            currentStamina += addedCapacity;
+        }
+
+        currentStamina = Mathf.Clamp(currentStamina, 0f, maxStamina);
+
+        NotifyStaminaChanged();
+
+        Debug.Log($"[AirStamina] Max stamina changed: {maxStamina:F0}. Current: {currentStamina:F0}/{maxStamina:F0}");
+    }
+
     private void RegenerateStamina()
     {
         if (Time.time < lastSpendTime + regenDelayAfterUse)

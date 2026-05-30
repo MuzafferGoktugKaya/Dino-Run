@@ -8,7 +8,24 @@ public class CoinPickup : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            GameManager.Instance.AddScore(scoreValue);
+
+            PlayerCollision playerCol = other.GetComponent<PlayerCollision>();
+
+
+            if (gameObject.CompareTag("BlackCoin"))
+            {
+                if (playerCol != null)
+                {
+                    playerCol.StartInvincibility();
+                }
+            }
+            else
+            {
+
+                GameManager.Instance.AddScore(scoreValue);
+            }
+
+
             Destroy(gameObject);
         }
     }

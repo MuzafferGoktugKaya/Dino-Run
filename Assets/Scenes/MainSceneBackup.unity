@@ -1260,6 +1260,7 @@ MonoBehaviour:
   spawnStep: 8
   spawnDistanceAhead: 120
   laneDistance: 3
+  blackCoinPrefab: {fileID: 1400482072822627969, guid: 23caf584b6ce20f4b8b6d5656204a19a, type: 3}
 --- !u!4 &1192591908
 Transform:
   m_ObjectHideFlags: 0
@@ -1979,6 +1980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eede5fc9fb802d84a9a74fc881cacd68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCollision
+  isInvincible: 0
 --- !u!1 &2049248663
 GameObject:
   m_ObjectHideFlags: 0

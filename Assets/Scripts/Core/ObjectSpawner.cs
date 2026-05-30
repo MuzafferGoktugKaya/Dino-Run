@@ -9,6 +9,9 @@ public class ObjectSpawner : MonoBehaviour
     public float spawnDistanceAhead = 120f;
     public float laneDistance = 3f;
 
+
+    public GameObject blackCoinPrefab;
+
     private float currentZ;
 
     void Start() { currentZ = startZ; }
@@ -32,33 +35,49 @@ public class ObjectSpawner : MonoBehaviour
 
         GameObject prefabToSpawn = null;
         float spawnY = 0f;
+        bool isBlackCoin = false;
 
         if (currentLevel.wormPrefab != null && Random.value < currentLevel.wormSpawnChance)
         {
             prefabToSpawn = currentLevel.wormPrefab;
-            spawnY = 0f; 
+            spawnY = 0f;
         }
-        else if (randomValue < 0.20f) 
-        { 
-            prefabToSpawn = currentLevel.coinPrefab; 
-            spawnY = currentLevel.coinY; 
-        }
-        else if (randomValue < 0.40f) 
-        { 
-            prefabToSpawn = currentLevel.ObstaclePrefab1; 
-            spawnY = currentLevel.obstacle1Y; 
-        }
-        else if (randomValue < 0.60f) 
-        { 
-            prefabToSpawn = currentLevel.ObstaclePrefab2; 
 
-            spawnY = currentLevel.obstacle2Y; 
+        else if (Random.value < 0.05f)
+        {
+            prefabToSpawn = blackCoinPrefab;
+            spawnY = currentLevel.coinY;
+            isBlackCoin = true;
+        }
+        else if (randomValue < 0.20f)
+        {
+            prefabToSpawn = currentLevel.coinPrefab;
+            spawnY = currentLevel.coinY;
+        }
+        else if (randomValue < 0.40f)
+        {
+            prefabToSpawn = currentLevel.ObstaclePrefab1;
+            spawnY = currentLevel.obstacle1Y;
+        }
+        else if (randomValue < 0.60f)
+        {
+            prefabToSpawn = currentLevel.ObstaclePrefab2;
+            spawnY = currentLevel.obstacle2Y;
         }
 
         if (prefabToSpawn != null)
         {
             GameObject go = Instantiate(prefabToSpawn, new Vector3(laneX, spawnY, currentZ), Quaternion.identity);
-            go.tag = "Obstacle"; 
+
+
+            if (isBlackCoin)
+            {
+                go.tag = "BlackCoin";
+            }
+            else
+            {
+                go.tag = "Obstacle";
+            }
         }
     }
 
@@ -66,6 +85,6 @@ public class ObjectSpawner : MonoBehaviour
     {
         GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
         foreach (GameObject obj in obstacles) Destroy(obj);
-        currentZ = player.position.z + 15f; 
+        currentZ = player.position.z + 15f;
     }
 }

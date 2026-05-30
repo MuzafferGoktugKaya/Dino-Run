@@ -256,6 +256,79 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 72039177}
   m_CullTransparentMesh: 1
+--- !u!1 &161265052
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 161265054}
+  - component: {fileID: 161265053}
+  m_Layer: 0
+  m_Name: AirDifficultyManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &161265053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161265052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 666589bba65fb1d4db92828e7353f5e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AirDifficultyManager
+  growthController: {fileID: 814405637}
+  obstacleSpawner: {fileID: 1117058735}
+  meatSpawner: {fileID: 1497230376}
+  adultStartsAtGrowthStage: 1
+  apexStartsAtGrowthStage: 2
+  youngPhase:
+    phaseName: Young
+    obstacleSpawnInterval: 1.5
+    obstacleSpeedMultiplier: 1
+    meatSpawnInterval: 2.5
+    alphaWeight: 20
+    betaWeight: 65
+    gammaWeight: 15
+  adultPhase:
+    phaseName: Adult
+    obstacleSpawnInterval: 1.25
+    obstacleSpeedMultiplier: 1.15
+    meatSpawnInterval: 2.4
+    alphaWeight: 20
+    betaWeight: 60
+    gammaWeight: 20
+  apexPhase:
+    phaseName: Apex
+    obstacleSpawnInterval: 1.05
+    obstacleSpeedMultiplier: 1.35
+    meatSpawnInterval: 2.3
+    alphaWeight: 15
+    betaWeight: 55
+    gammaWeight: 30
+--- !u!4 &161265054
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161265052}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &225864754
 GameObject:
   m_ObjectHideFlags: 0
@@ -2384,3 +2457,4 @@ SceneRoots:
   - {fileID: 572843017}
   - {fileID: 1218584758}
   - {fileID: 225864756}
+  - {fileID: 161265054}

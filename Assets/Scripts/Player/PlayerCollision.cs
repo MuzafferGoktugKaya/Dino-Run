@@ -3,12 +3,10 @@ using System.Collections;
 
 public class PlayerCollision : MonoBehaviour
 {
-
     public bool isInvincible = false;
 
     private void OnCollisionEnter(Collision collision)
     {
-
         if (collision.gameObject.CompareTag("Obstacle"))
         {
             if (isInvincible == false)
@@ -17,6 +15,7 @@ public class PlayerCollision : MonoBehaviour
             }
             else
             {
+
                 Debug.Log("Ölümsüzsün, engele çarptın ama yanmadın!");
             }
         }

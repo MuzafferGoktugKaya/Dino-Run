@@ -9,7 +9,6 @@ public class ObjectSpawner : MonoBehaviour
     public float spawnDistanceAhead = 120f;
     public float laneDistance = 3f;
 
-
     public GameObject blackCoinPrefab;
 
     private float currentZ;
@@ -42,8 +41,7 @@ public class ObjectSpawner : MonoBehaviour
             prefabToSpawn = currentLevel.wormPrefab;
             spawnY = 0f;
         }
-
-        else if (Random.value < 0.05f)
+        else if (blackCoinPrefab != null && Random.value < 0.05f) // %5 şansla senin siyah coin
         {
             prefabToSpawn = blackCoinPrefab;
             spawnY = currentLevel.coinY;
@@ -68,7 +66,6 @@ public class ObjectSpawner : MonoBehaviour
         if (prefabToSpawn != null)
         {
             GameObject go = Instantiate(prefabToSpawn, new Vector3(laneX, spawnY, currentZ), Quaternion.identity);
-
 
             if (isBlackCoin)
             {

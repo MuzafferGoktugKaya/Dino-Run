@@ -149,7 +149,7 @@ public class ObjectSpawner : MonoBehaviour
 public void ClearExistingObstacles()
     {
         // Temizlenecek tag listesini sadeleştirdik: Normal engeller, standart coinler, kara coinler ve senin verdiğin ortak hellcoins tag'i
-        string[] tagsToClear = { "Obstacle", "HellCoins" };
+        string[] tagsToClear = { "Obstacle", "HellCoins", "NegCoins" };
 
         foreach (string currentTag in tagsToClear)
         {

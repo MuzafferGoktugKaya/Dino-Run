@@ -54,6 +54,11 @@ public class GameManager : MonoBehaviour
     {
         isGameOver = false;
 
+if (AudioManager.Instance != null)
+    {
+        AudioManager.Instance.ChangeBGM(AudioManager.Instance.titleBGM);
+    }
+
         if (fadePanel != null)
         {
             fadePanel.color = new Color(0f, 0f, 0f, 0f);
@@ -79,27 +84,37 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void StartGame()
+public void StartGame()
+{
+    // 1. Buton sesini çal
+    if (AudioManager.Instance != null) 
     {
-        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonSFX();
+        AudioManager.Instance.PlayButtonSFX();
         
-        isGameStarted = true;
-        Time.timeScale = 1f;
-
-        if (titleScreenPanel != null) titleScreenPanel.SetActive(false);
-        if (inGameHUDPanel != null) inGameHUDPanel.SetActive(true);
-        if (gameOverPanel != null) gameOverPanel.SetActive(false);
-        if (inGameHUDCanvasGroup != null) inGameHUDCanvasGroup.alpha = 1f;
-        
-        score = 0;
-        UpdateScoreUI();
-
-        if (LevelManager.Instance != null && LevelManager.Instance.currentLevel != null)
-        {
-            CheckAndShowZoneIntro(LevelManager.Instance.currentLevel);
-            LevelManager.Instance.PlayCurrentZoneBGM();
-        }
+        // 2. MÜZİĞİ ANINDA KES (Fade olmadan)
+        AudioManager.Instance.StopBGM(); 
     }
+
+    // 3. Oyun değişkenlerini ayarla
+    isGameStarted = true;
+    Time.timeScale = 1f;
+
+    // 4. Panelleri ayarla
+    if (titleScreenPanel != null) titleScreenPanel.SetActive(false);
+    if (inGameHUDPanel != null) inGameHUDPanel.SetActive(true);
+    if (gameOverPanel != null) gameOverPanel.SetActive(false);
+    if (inGameHUDCanvasGroup != null) inGameHUDCanvasGroup.alpha = 1f;
+    
+    score = 0;
+    UpdateScoreUI();
+
+    // 5. Yeni müziği başlat
+    if (LevelManager.Instance != null && LevelManager.Instance.currentLevel != null)
+    {
+        CheckAndShowZoneIntro(LevelManager.Instance.currentLevel);
+        LevelManager.Instance.PlayCurrentZoneBGM();
+    }
+}
 
     public void CheckAndShowZoneIntro(LevelData zoneData)
     {

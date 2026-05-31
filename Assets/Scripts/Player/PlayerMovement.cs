@@ -189,6 +189,11 @@ public class PlayerMovement : MonoBehaviour
         slideTimer = slideDuration;
         capsuleCollider.height = slideColliderHeight;
         capsuleCollider.center = slideColliderCenter;
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.slideSFX);
+        }
     }
 
     void EndSlide()

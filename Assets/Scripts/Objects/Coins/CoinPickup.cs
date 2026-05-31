@@ -16,6 +16,7 @@ public class CoinPickup : MonoBehaviour
             {
                 if (playerCol != null)
                 {
+                    AudioManager.Instance.PlaySFX(AudioManager.Instance.powerUpSFX);
                     playerCol.StartInvincibility();
                 }
             }

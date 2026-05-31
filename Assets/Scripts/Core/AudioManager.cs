@@ -10,12 +10,14 @@ public class AudioManager : MonoBehaviour
     public AudioSource sfxSource;
 
     [Header("Müzik Fade Ayarları")]
-    public float bgmFadeInDuration = 1.2f; 
+    public float bgmFadeInDuration = 1.2f;
     [Range(0f, 1f)] public float maxBGMVolume = 0.6f;
 
     [Header("Genel Ses Klipleri")]
+    public AudioClip titleBGM;
     public AudioClip buttonClickSFX;
     public AudioClip jumpSFX;
+    public AudioClip slideSFX;
     public AudioClip coinSFX;
     public AudioClip powerUpSFX; // Karacoin ilk alındığında çalacak efekt
     
@@ -24,8 +26,12 @@ public class AudioManager : MonoBehaviour
     public AudioClip gameOverJingle;  
 
     [Header("Power Up Özel Müziği")]
-    public AudioClip powerUpBGM;   // Süre boyunca çalacak coşkulu müzik
-    private AudioClip savedZoneBGM; // Süre bittiğinde geri dönmek için eski müziği saklar
+    public AudioClip powerUpBGM;
+    private AudioClip savedZoneBGM;
+
+    [Header("Coin Özel Sesleri")]
+public AudioClip specialCoinSFX;
+public AudioClip negativeCoinSFX;
 
     private Coroutine bgmFadeCoroutine;
     private bool isPowerUpBGMActive = false;
@@ -132,4 +138,25 @@ public class AudioManager : MonoBehaviour
             bgmSource.volume = maxBGMVolume;
         }
     }
+
+    public void StopBGMWithFade(float fadeDuration = 1.0f)
+{
+    StartCoroutine(FadeOutRoutine(fadeDuration));
+}
+
+private IEnumerator FadeOutRoutine(float duration)
+{
+    float startVolume = bgmSource.volume;
+    float timer = 0;
+
+    while (timer < duration)
+    {
+        timer += Time.deltaTime;
+        bgmSource.volume = Mathf.Lerp(startVolume, 0, timer / duration);
+        yield return null;
+    }
+
+    bgmSource.Stop();
+    bgmSource.volume = startVolume; // Bir sonraki sefer için sesi sıfırla
+}
 }

@@ -11,7 +11,9 @@ public class HellNegativeCoin : MonoBehaviour
 
         if (GameManager.Instance != null)
         {
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.negativeCoinSFX);
             GameManager.Instance.RemoveScore(scorePenalty);
+            
         }
 
         Destroy(gameObject);

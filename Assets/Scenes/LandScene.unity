@@ -704,13 +704,17 @@ MonoBehaviour:
   sfxSource: {fileID: 247128751}
   bgmFadeInDuration: 1.2
   maxBGMVolume: 0.6
+  titleBGM: {fileID: 8300000, guid: 64708fc7bbc2c064ebfa9f27c66acdb8, type: 3}
   buttonClickSFX: {fileID: 8300000, guid: 4c514332e3a1a1f439bd165fb7aa90ba, type: 3}
   jumpSFX: {fileID: 8300000, guid: 0f8049c296634e64cb2ca74338b02f3e, type: 3}
+  slideSFX: {fileID: 8300000, guid: 8a7a4da5b85fcee41bf1c54615005d12, type: 3}
   coinSFX: {fileID: 8300000, guid: 2588086d6e3f50a46a012a6e0465c7cf, type: 3}
   powerUpSFX: {fileID: 8300000, guid: 1d9b788465894544ca159457d6037784, type: 3}
   bonkSFX: {fileID: 8300000, guid: 4c46ce41c4958864498e96dfffa40e18, type: 3}
   gameOverJingle: {fileID: 8300000, guid: 3be18f50815fa09408f9ffac2febb504, type: 3}
   powerUpBGM: {fileID: 8300000, guid: a738bbd5198f29e4fab1a86df5064daf, type: 3}
+  specialCoinSFX: {fileID: 8300000, guid: a017cceeb1ad5da4bbd316b7fa9cab63, type: 3}
+  negativeCoinSFX: {fileID: 8300000, guid: 8bd50aa4304177247aae49d0dc5d88d8, type: 3}
 --- !u!4 &247128754
 Transform:
   m_ObjectHideFlags: 0

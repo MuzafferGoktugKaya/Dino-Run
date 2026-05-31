@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections;
 using UnityEngine.UI;
 using System;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -14,6 +15,11 @@ public class GameManager : MonoBehaviour
     public GameObject titleScreenPanel;
     public GameObject inGameHUDPanel;
     public GameObject gameOverPanel;
+    private Coroutine zoneIntroRoutine;
+
+    [Header("Zone Bilgilendirme Paneli")]
+    public GameObject zoneIntroPanel; 
+    public TMP_Text zoneIntroText;    
 
     [Header("HUD Fade Ayarı")]
     [Tooltip("Zone geçişlerinde HUD'ın (Skorun) yumuşakça kaybolup gelmesi için Canvas Group")]
@@ -31,30 +37,12 @@ public class GameManager : MonoBehaviour
     public TMP_Text gameOverCurrentScoreText;
     public TMP_Text gameOverHighScoreText;
 
-    [Header("Ses Kaynakları")]
-    public AudioSource bgmSource;
-    public AudioSource sfxSource;
-
-    [Header("Müzik Fade Ayarları")]
-    public float bgmFadeInDuration = 1.2f; 
-    [Range(0f, 1f)] public float maxBGMVolume = 0.6f;
-
-    [Header("Genel Ses Klipleri")]
-    public AudioClip buttonClickSFX;
-    public AudioClip jumpSFX;
-    public AudioClip coinSFX;
-    public AudioClip powerUpSFX;
-    
-    [Header("Yenilgi Sesleri")]
-    public AudioClip bonkSFX;         
-    public AudioClip gameOverJingle;  
-
     [Header("Oyun Durumu")]
     public bool isGameStarted = false;
     public bool isGameOver = false;
     public int score = 0;
 
-    private Coroutine bgmFadeCoroutine; 
+    private HashSet<string> visitedZones = new HashSet<string>();
 
     private void Awake()
     {
@@ -72,8 +60,8 @@ public class GameManager : MonoBehaviour
             fadePanel.raycastTarget = false;
         }
 
-        // Başlangıçta HUD opaklığını tamamen açık yapalım
         if (inGameHUDCanvasGroup != null) inGameHUDCanvasGroup.alpha = 1f;
+        if (zoneIntroPanel != null) zoneIntroPanel.SetActive(false); 
 
         if (shouldSkipTitle)
         {
@@ -93,7 +81,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        PlaySFX(buttonClickSFX);
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonSFX();
         
         isGameStarted = true;
         Time.timeScale = 1f;
@@ -106,10 +94,66 @@ public class GameManager : MonoBehaviour
         score = 0;
         UpdateScoreUI();
 
-        if (LevelManager.Instance != null)
+        if (LevelManager.Instance != null && LevelManager.Instance.currentLevel != null)
         {
+            CheckAndShowZoneIntro(LevelManager.Instance.currentLevel);
             LevelManager.Instance.PlayCurrentZoneBGM();
         }
+    }
+
+    public void CheckAndShowZoneIntro(LevelData zoneData)
+    {
+        if (zoneData == null) return;
+
+        string uniqueZoneKey = zoneData.name; 
+
+        if (!visitedZones.Contains(uniqueZoneKey))
+        {
+            visitedZones.Add(uniqueZoneKey); 
+
+            if (!string.IsNullOrEmpty(zoneData.firstTimeDescription))
+            {
+                if (zoneIntroRoutine != null) StopCoroutine(zoneIntroRoutine);
+                zoneIntroRoutine = StartCoroutine(ShowZoneIntroRoutine(zoneData.firstTimeDescription));
+            }
+        }
+    }
+
+    private IEnumerator ShowZoneIntroRoutine(string message)
+    {
+        if (zoneIntroPanel == null || zoneIntroText == null) yield break;
+
+        zoneIntroText.text = message;
+        zoneIntroPanel.SetActive(true);
+
+        CanvasGroup panelGroup = zoneIntroPanel.GetComponent<CanvasGroup>();
+        if (panelGroup != null)
+        {
+            float t = 0f;
+            while (t < 0.5f)
+            {
+                t += Time.deltaTime;
+                panelGroup.alpha = Mathf.Clamp01(t / 0.5f);
+                yield return null;
+            }
+            panelGroup.alpha = 1f;
+        }
+
+        yield return new WaitForSeconds(3f);
+
+        if (panelGroup != null)
+        {
+            float t = 0f;
+            while (t < 0.5f)
+            {
+                t += Time.deltaTime;
+                panelGroup.alpha = Mathf.Clamp01(1f - (t / 0.5f));
+                yield return null;
+            }
+            panelGroup.alpha = 0f;
+        }
+
+        zoneIntroPanel.SetActive(false);
     }
 
     public void AddScore(int amount)
@@ -139,16 +183,17 @@ public class GameManager : MonoBehaviour
         isGameOver = true;
         Time.timeScale = 0f; 
 
-        if (bgmFadeCoroutine != null) StopCoroutine(bgmFadeCoroutine);
-        if (bgmSource != null) bgmSource.Stop(); 
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopBGM();
+            AudioManager.Instance.PlayBonkSFX();
+        }
 
-        PlaySFX(bonkSFX);
         StartCoroutine(GameOverSequenceRoutine());
     }
 
     private IEnumerator GameOverSequenceRoutine()
     {
-        // Başlangıçta panelleri tamamen şeffaf yapıyoruz
         if (gameOverTitleGroup != null) gameOverTitleGroup.alpha = 0f;
         if (gameOverContentGroup != null) gameOverContentGroup.alpha = 0f;
 
@@ -166,14 +211,12 @@ public class GameManager : MonoBehaviour
         if (gameOverCurrentScoreText != null) gameOverCurrentScoreText.text = "Score: " + score;
         if (gameOverHighScoreText != null) gameOverHighScoreText.text = "High Score: " + highScore;
 
-        // Bonk sesinin duyulması için minik bir es ve jingle başlangıcı
         yield return new WaitForSecondsRealtime(0.15f);
-        PlaySFX(gameOverJingle);
+        
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayGameOverJingle();
 
-        // KARE TEMİZLEME: İlk karedeki lag/kasma bilgisini çöpe atmak için 1 kare bekliyoruz
         yield return null;
 
-        // 1. AŞAMA: GAME OVER Yazısının Belirmesi (Fade In)
         float fadeDuration = 0.8f; 
         float timer = 0f;
         
@@ -188,10 +231,8 @@ public class GameManager : MonoBehaviour
         }
         if (gameOverTitleGroup != null) gameOverTitleGroup.alpha = 1f;
 
-        // Yazı tamamen açıldıktan sonra sinematik bekleme
         yield return new WaitForSecondsRealtime(0.5f);
 
-        // 2. AŞAMA: Butonların ve Skorların Belirmesi (Fade In)
         timer = 0f;
         while (timer < fadeDuration)
         {
@@ -207,7 +248,7 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
-        PlaySFX(buttonClickSFX);
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonSFX();
         shouldSkipTitle = true; 
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -215,7 +256,7 @@ public class GameManager : MonoBehaviour
 
     public void GoToTitle()
     {
-        PlaySFX(buttonClickSFX);
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonSFX();
         shouldSkipTitle = false; 
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -223,7 +264,7 @@ public class GameManager : MonoBehaviour
 
     public void ExitGame()
     {
-        PlaySFX(buttonClickSFX);
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonSFX();
         Debug.Log("Oyundan çıkılıyor...");
         Application.Quit();
     }
@@ -240,14 +281,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // --- ENTEGRE HUD FADE DESTEKLİ ZONE GEÇİŞİ ---
     private IEnumerator FadeRoutine(Action zoneSwitchLogic)
     {
         fadePanel.raycastTarget = true;
         float duration = 0.4f;
         float timer = 0f;
 
-        // Ekran Siyaha Boyanırken HUD (Skor) Yavaşça Kayboluyor
         while (timer < duration)
         {
             timer += Time.unscaledDeltaTime; 
@@ -256,7 +295,7 @@ public class GameManager : MonoBehaviour
             fadePanel.color = new Color(0f, 0f, 0f, progress);
             
             if (inGameHUDCanvasGroup != null) 
-                inGameHUDCanvasGroup.alpha = 1f - progress; // Ters orantı (Görünmez oluyor)
+                inGameHUDCanvasGroup.alpha = 1f - progress;
 
             yield return null;
         }
@@ -264,7 +303,6 @@ public class GameManager : MonoBehaviour
         fadePanel.color = new Color(0f, 0f, 0f, 1f);
         if (inGameHUDCanvasGroup != null) inGameHUDCanvasGroup.alpha = 0f;
 
-        // Arka planda bölgeyi değiştiriyoruz
         if (zoneSwitchLogic != null)
         {
             zoneSwitchLogic.Invoke(); 
@@ -272,8 +310,12 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(0.2f); 
 
+        if (LevelManager.Instance != null && LevelManager.Instance.currentLevel != null)
+        {
+            CheckAndShowZoneIntro(LevelManager.Instance.currentLevel);
+        }
+
         timer = 0f;
-        // Ekran Açılırken HUD (Skor) Pürüzsüzce Geri Geliyor
         while (timer < duration)
         {
             timer += Time.unscaledDeltaTime;
@@ -282,7 +324,7 @@ public class GameManager : MonoBehaviour
             fadePanel.color = new Color(0f, 0f, 0f, 1f - progress);
             
             if (inGameHUDCanvasGroup != null) 
-                inGameHUDCanvasGroup.alpha = progress; // Doğru orantı (Görünür oluyor)
+                inGameHUDCanvasGroup.alpha = progress;
 
             yield return null;
         }
@@ -295,40 +337,11 @@ public class GameManager : MonoBehaviour
 
     public void PlaySFX(AudioClip clip)
     {
-        if (sfxSource != null && clip != null)
-        {
-            sfxSource.PlayOneShot(clip);
-        }
+        if (AudioManager.Instance != null) AudioManager.Instance.PlaySFX(clip);
     }
 
     public void ChangeBGM(AudioClip newBGM)
     {
-        if (bgmSource == null) return;
-        if (bgmSource.clip == newBGM && bgmSource.isPlaying) return;
-
-        if (bgmFadeCoroutine != null) StopCoroutine(bgmFadeCoroutine);
-        bgmFadeCoroutine = StartCoroutine(FadeInBGMRoutine(newBGM));
-    }
-
-    private IEnumerator FadeInBGMRoutine(AudioClip newBGM)
-    {
-        bgmSource.volume = 0f;
-        bgmSource.Stop();
-
-        if (newBGM != null)
-        {
-            bgmSource.clip = newBGM;
-            bgmSource.loop = true;
-            bgmSource.Play();
-
-            float timer = 0f;
-            while (timer < bgmFadeInDuration)
-            {
-                timer += Time.unscaledDeltaTime;
-                bgmSource.volume = Mathf.Lerp(0f, maxBGMVolume, timer / bgmFadeInDuration);
-                yield return null;
-            }
-            bgmSource.volume = maxBGMVolume;
-        }
+        if (AudioManager.Instance != null) AudioManager.Instance.ChangeBGM(newBGM);
     }
 }

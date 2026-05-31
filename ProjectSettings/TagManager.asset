@@ -8,6 +8,7 @@ TagManager:
   - Coin
   - AirObstacle
   - BlackCoin
+  - HellCoins
   layers:
   - Default
   - TransparentFX

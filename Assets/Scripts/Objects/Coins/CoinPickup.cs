@@ -25,7 +25,7 @@ public class CoinPickup : MonoBehaviour
                 GameManager.Instance.AddScore(scoreValue);
             }
 
-            GameManager.Instance.PlaySFX(GameManager.Instance.coinSFX);
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.coinSFX);
             Destroy(gameObject);
         }
     }

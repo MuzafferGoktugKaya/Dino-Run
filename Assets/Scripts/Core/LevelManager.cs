@@ -10,15 +10,33 @@ public class LevelManager : MonoBehaviour
     [Tooltip("0. Eleman her zaman LAND zone olmalıdır!")]
     public List<LevelData> levels = new List<LevelData>();
     
-    [Header("Transition Settings")]
-    public int scoreStep = 5; 
-    public float transitionPauseDuration = 0.75f; // Geçiş anındaki duraklama süresi
+[Header("Transition Settings")]
+public int minScoreStep = 10;
+public int maxScoreStep = 15;
+
+private int currentScoreStep;
+private int nextLevelThreshold;
+
+public float transitionPauseDuration = 0.75f;
 
     private int currentLevelIndex = 0;
     private int totalLevelsPassed = 0; 
     private ObjectSpawner spawner;
     private GroundLooper groundLooper;
     private bool isTransitioning = false;
+
+    // ÇÖZÜM: GameManager'ın hata vermeden "currentLevel" verisini okuyabilmesi için kısa bir Property ekledik
+    public LevelData currentLevel
+    {
+        get
+        {
+            if (levels != null && currentLevelIndex < levels.Count)
+            {
+                return levels[currentLevelIndex];
+            }
+            return null;
+        }
+    }
 
     void Awake()
     {
@@ -32,23 +50,40 @@ public class LevelManager : MonoBehaviour
         groundLooper = Object.FindFirstObjectByType<GroundLooper>();
         
         // İlk seviye her zaman listenin ilk elemanıdır (Land Zone)
-        currentLevelIndex = 0; 
-        if (levels.Count > 0) UpdateSystems(levels[currentLevelIndex]);
+currentLevelIndex = 0;
+
+currentScoreStep = Random.Range(minScoreStep, maxScoreStep + 1);
+nextLevelThreshold = currentScoreStep;
+
+if (levels.Count > 0)
+    UpdateSystems(levels[currentLevelIndex]);
     }
 
-    void Update()
+void Update()
+{
+    if (GameManager.Instance == null ||
+        !GameManager.Instance.isGameStarted ||
+        GameManager.Instance.isGameOver ||
+        levels.Count == 0 ||
+        isTransitioning)
     {
-        if (GameManager.Instance == null || !GameManager.Instance.isGameStarted || GameManager.Instance.isGameOver || levels.Count == 0 || isTransitioning) return;
-
-        int nextLevelThreshold = (totalLevelsPassed + 1) * scoreStep;
-        
-        if (GameManager.Instance.score >= nextLevelThreshold)
-        {
-            totalLevelsPassed++;
-            SelectNextRandomLevelIndex();
-            StartCoroutine(NextLevelTransitionRoutine());
-        }
+        return;
     }
+
+    if (GameManager.Instance.score >= nextLevelThreshold)
+    {
+        totalLevelsPassed++;
+
+        // Sonraki geçiş için yeni random skor aralığı
+        currentScoreStep = Random.Range(minScoreStep, maxScoreStep + 1);
+        nextLevelThreshold += currentScoreStep;
+
+        Debug.Log($"Next zone change at score: {nextLevelThreshold}");
+
+        SelectNextRandomLevelIndex();
+        StartCoroutine(NextLevelTransitionRoutine());
+    }
+}
 
     void SelectNextRandomLevelIndex()
     {
@@ -107,6 +142,13 @@ public class LevelManager : MonoBehaviour
 
         // 2. TAM KARANLIK AN (Arka planda harita ve müzik oyuncu görmeden değişir)
         UpdateSystems(levels[currentLevelIndex]);
+
+        // ENTEGRASYON: Yeni bölge arka planda tam olarak yüklendiği salisede, 
+        // ekran hala siyahken ilk defa giriş yazısı kontrolünü tetikliyoruz.
+        if (GameManager.Instance != null && currentLevel != null)
+        {
+            GameManager.Instance.CheckAndShowZoneIntro(currentLevel);
+        }
 
         // Belirlediğin duraklama süresi kadar karanlık ekranda bekle
         yield return new WaitForSecondsRealtime(transitionPauseDuration);

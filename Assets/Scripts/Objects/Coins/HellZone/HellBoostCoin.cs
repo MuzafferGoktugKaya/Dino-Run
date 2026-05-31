@@ -36,7 +36,7 @@ public class HellBoostCoin : MonoBehaviour
             }
         }
         
-        GameManager.Instance.PlaySFX(GameManager.Instance.powerUpSFX);
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.powerUpSFX);
         Destroy(gameObject);
     }
 }

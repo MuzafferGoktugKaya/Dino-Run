@@ -9,7 +9,10 @@ public class LevelData : ScriptableObject
     public Material skyboxMaterial;
 
     [Header("Ses Ayarları")]
-    public AudioClip zoneBGM; // <-- YENİ: Her zone'a özel arka plan müziği
+    public AudioClip zoneBGM;
+
+    [Header("Zone Giriş Ayarları")]
+    [TextArea(2, 5)] public string firstTimeDescription;
 
     [Header("Prefablar")]
     public GameObject coinPrefab;

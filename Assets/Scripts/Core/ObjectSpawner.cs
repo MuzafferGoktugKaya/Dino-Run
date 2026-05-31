@@ -42,12 +42,15 @@ public class ObjectSpawner : MonoBehaviour
 
         GameObject prefabToSpawn = null;
         float spawnY = 0f;
+        
         bool isBlackCoin = false;
+        bool isObstacle = false; // Nesnenin engel olup olmadığını ayırmak için yeni kontrol
 
         if (currentLevel.wormPrefab != null && Random.value < currentLevel.wormSpawnChance)
         {
             prefabToSpawn = currentLevel.wormPrefab;
             spawnY = 0f;
+            isObstacle = true;
         }
         else if (blackCoinPrefab != null && Random.value < 0.01f)
         {
@@ -57,29 +60,36 @@ public class ObjectSpawner : MonoBehaviour
         }
         else if (randomValue < 0.20f)
         {
-            prefabToSpawn = currentLevel.coinPrefab;
+            // ÇÖZÜM: Direkt coinPrefab basmak yerine, LevelData ayarlarını dinleyen fonksiyonu çağırıyoruz!
+            // Böylece HellZone'daysak şansa göre HellSpeed, HellJump veya HellNegative coin dönecek.
+            prefabToSpawn = GetCoinPrefabForCurrentLevel();
             spawnY = currentLevel.coinY;
         }
         else if (randomValue < 0.40f)
         {
             prefabToSpawn = currentLevel.ObstaclePrefab1;
             spawnY = currentLevel.obstacle1Y;
+            isObstacle = true;
         }
         else if (randomValue < 0.60f)
         {
             prefabToSpawn = currentLevel.ObstaclePrefab2;
             spawnY = currentLevel.obstacle2Y;
+            isObstacle = true;
         }
 
         if (prefabToSpawn != null)
         {
             GameObject go = Instantiate(prefabToSpawn, new Vector3(laneX, spawnY, currentZ), Quaternion.identity);
 
+            // TAG YÖNETİMİ DÜZELTİLDİ: 
+            // Sadece gerçek engeller (Worm, Obstacle1, Obstacle2) "Obstacle" tag'ini alır.
+            // Coinlerin (Normal, Speed, Jump, Negative) kendi üzerindeki prefab tag'i (Örn: "coin") korunur!
             if (isBlackCoin)
             {
                 go.tag = "BlackCoin";
             }
-            else
+            else if (isObstacle)
             {
                 go.tag = "Obstacle";
             }
@@ -136,18 +146,32 @@ public class ObjectSpawner : MonoBehaviour
         return currentLevel.coinPrefab;
     }
 
-    public void ClearExistingObstacles()
+public void ClearExistingObstacles()
     {
-        GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
+        // Temizlenecek tag listesini sadeleştirdik: Normal engeller, standart coinler, kara coinler ve senin verdiğin ortak hellcoins tag'i
+        string[] tagsToClear = { "Obstacle", "HellCoins" };
 
-        foreach (GameObject obj in obstacles)
+        foreach (string currentTag in tagsToClear)
         {
-            Destroy(obj);
+            try
+            {
+                GameObject[] objectsWithTag = GameObject.FindGameObjectsWithTag(currentTag);
+                
+                foreach (GameObject obj in objectsWithTag)
+                {
+                    Destroy(obj);
+                }
+            }
+            catch (System.Exception)
+            {
+                // Unity'de bu taglerden biri henüz tanımlanmadıysa editörün hata fırlatıp kodu kesmesini engeller
+            }
         }
 
+        // Oyuncunun hemen önünde aniden nesne belirmemesi için safe-zone mesafesi
         if (player != null)
         {
-            currentZ = player.position.z + 15f;
+            currentZ = player.position.z + 45f;
         }
     }
 }

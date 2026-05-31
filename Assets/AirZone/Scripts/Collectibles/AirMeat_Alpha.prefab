@@ -108,6 +108,7 @@ GameObject:
   - component: {fileID: 8810924502251399230}
   - component: {fileID: 1086614813322079646}
   - component: {fileID: 6599657118302897008}
+  - component: {fileID: 2479338355811917923}
   m_Layer: 0
   m_Name: AirMeat_Alpha
   m_TagString: Untagged
@@ -262,7 +263,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AirMeatMover
   moveSpeed: 8
-  destroyZ: -10
+  returnZ: -10
 --- !u!114 &1086614813322079646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -289,3 +290,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AirRestoreStaminaMeatEffect
   restoreAmount: 25
+--- !u!114 &2479338355811917923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4377385847731375313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 400f06ffdfb0afb42aaa3fd1908df555, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AirMeatAudioFeedbackEffect
+  pickupClip: {fileID: 8300000, guid: f52f858a00f1fde48ade6420d598a32a, type: 3}
+  volume: 0.151

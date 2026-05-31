@@ -21,6 +21,7 @@ public class AirObstacleSpawner : MonoBehaviour
     [SerializeField] private int maxHeightLevel = 2;
 
     private float spawnTimer;
+    private float obstacleSpeedMultiplier = 1f;
 
     private void Update()
     {
@@ -32,6 +33,16 @@ public class AirObstacleSpawner : MonoBehaviour
             SpawnObstacle();
             spawnTimer = 0f;
         }
+    }
+
+    public void SetSpawnInterval(float interval)
+    {
+        spawnInterval = Mathf.Max(0.1f, interval);
+    }
+
+    public void SetObstacleSpeedMultiplier(float multiplier)
+    {
+        obstacleSpeedMultiplier = Mathf.Max(0f, multiplier);
     }
 
     private void SpawnObstacle()
@@ -47,6 +58,11 @@ public class AirObstacleSpawner : MonoBehaviour
         Vector3 spawnPosition = new Vector3(spawnX, spawnY, spawnZ);
 
         // Creates the obstacle prefab at the calculated position.
-        Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
+        GameObject obstacleInstance = Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
+
+        if (obstacleInstance.TryGetComponent(out AirObstacle obstacle))
+        {
+            obstacle.SetDifficultySpeedMultiplier(obstacleSpeedMultiplier);
+        }
     }
 }

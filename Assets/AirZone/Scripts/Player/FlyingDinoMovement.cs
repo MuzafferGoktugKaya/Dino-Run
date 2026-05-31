@@ -16,8 +16,19 @@ public class FlyingDinoMovement : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float moveSmoothness = 10f;
 
+    [Header("Stamina")]
+    [SerializeField] private AirStaminaController staminaController;
+
     private int currentLane = 0;
     private int currentHeightLevel = 1;
+
+    private void Awake()
+    {
+        if (staminaController == null)
+        {
+            staminaController = GetComponent<AirStaminaController>();
+        }
+    }
 
     private void Update()
     {
@@ -38,16 +49,31 @@ public class FlyingDinoMovement : MonoBehaviour
             currentLane = Mathf.Clamp(currentLane + 1, minLane, maxLane);
         }
 
-        // Vertical air movement to change height levels. 
+        // Vertical air movement to change height levels.
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
         {
-            currentHeightLevel = Mathf.Clamp(currentHeightLevel + 1, minHeightLevel, maxHeightLevel);
+            TryMoveUp();
         }
 
         if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
         {
             currentHeightLevel = Mathf.Clamp(currentHeightLevel - 1, minHeightLevel, maxHeightLevel);
         }
+    }
+
+    private void TryMoveUp()
+    {
+        if (currentHeightLevel >= maxHeightLevel)
+        {
+            return;
+        }
+
+        if (staminaController != null && !staminaController.TrySpendForClimb())
+        {
+            return;
+        }
+
+        currentHeightLevel = Mathf.Clamp(currentHeightLevel + 1, minHeightLevel, maxHeightLevel);
     }
 
     private void MoveToTargetPosition()

@@ -2,11 +2,11 @@ using UnityEngine;
 using AirZone.Weather;
 
 [DisallowMultipleComponent]
-public class AirObstacle : MonoBehaviour
+public class AirMeatMover : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 8f;
-    [SerializeField] private float destroyZ = -15f;
+    [SerializeField] private float returnZ = -10f;
 
     [Header("Weather Speed Effect")]
     [SerializeField] private float forwardWindSpeedBonus = 4f;
@@ -14,7 +14,6 @@ public class AirObstacle : MonoBehaviour
     [SerializeField] private float minimumMoveSpeed = 1f;
 
     private AirWeatherManager weatherManager;
-    private float difficultySpeedMultiplier = 1f;
 
     private void Awake()
     {
@@ -27,15 +26,10 @@ public class AirObstacle : MonoBehaviour
 
         transform.Translate(Vector3.back * finalMoveSpeed * Time.deltaTime, Space.World);
 
-        if (transform.position.z <= destroyZ)
+        if (transform.position.z <= returnZ)
         {
-            Destroy(gameObject);
+            ReturnToPoolOrDestroy();
         }
-    }
-
-    public void SetDifficultySpeedMultiplier(float multiplier)
-    {
-        difficultySpeedMultiplier = Mathf.Max(0f, multiplier);
     }
 
     private float GetWeatherAdjustedSpeed()
@@ -54,8 +48,17 @@ public class AirObstacle : MonoBehaviour
             }
         }
 
-        finalMoveSpeed *= difficultySpeedMultiplier;
-
         return Mathf.Max(minimumMoveSpeed, finalMoveSpeed);
+    }
+
+    private void ReturnToPoolOrDestroy()
+    {
+        if (TryGetComponent(out AirPooledObject pooledObject))
+        {
+            pooledObject.ReturnToPool();
+            return;
+        }
+
+        Destroy(gameObject);
     }
 }

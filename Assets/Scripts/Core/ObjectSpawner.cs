@@ -13,12 +13,20 @@ public class ObjectSpawner : MonoBehaviour
 
     private float currentZ;
 
-    void Start() { currentZ = startZ; }
-    void Update() { SpawnUntilAhead(); }
+    void Start()
+    {
+        currentZ = startZ;
+    }
+
+    void Update()
+    {
+        SpawnUntilAhead();
+    }
 
     void SpawnUntilAhead()
     {
         if (player == null || currentLevel == null) return;
+
         while (currentZ < player.position.z + spawnDistanceAhead)
         {
             SpawnNext();
@@ -78,10 +86,68 @@ public class ObjectSpawner : MonoBehaviour
         }
     }
 
+    GameObject GetCoinPrefabForCurrentLevel()
+    {
+        if (currentLevel == null) return null;
+
+        bool hasNegativeCoin =
+            currentLevel.hellNegativeCoinChance > 0f &&
+            currentLevel.hellNegativeCoinPrefab != null;
+
+        if (hasNegativeCoin && Random.value < currentLevel.hellNegativeCoinChance)
+        {
+            return currentLevel.hellNegativeCoinPrefab;
+        }
+
+        bool hasHellSpecialCoins =
+            currentLevel.hellSpecialCoinChance > 0f &&
+            (currentLevel.hellSpeedCoinPrefab != null || currentLevel.hellJumpCoinPrefab != null);
+
+        if (!hasHellSpecialCoins)
+        {
+            return currentLevel.coinPrefab;
+        }
+
+        if (Random.value > currentLevel.hellSpecialCoinChance)
+        {
+            return currentLevel.coinPrefab;
+        }
+
+        bool canSpawnSpeedCoin = currentLevel.hellSpeedCoinPrefab != null;
+        bool canSpawnJumpCoin = currentLevel.hellJumpCoinPrefab != null;
+
+        if (canSpawnSpeedCoin && canSpawnJumpCoin)
+        {
+            return Random.value < 0.5f
+                ? currentLevel.hellSpeedCoinPrefab
+                : currentLevel.hellJumpCoinPrefab;
+        }
+
+        if (canSpawnSpeedCoin)
+        {
+            return currentLevel.hellSpeedCoinPrefab;
+        }
+
+        if (canSpawnJumpCoin)
+        {
+            return currentLevel.hellJumpCoinPrefab;
+        }
+
+        return currentLevel.coinPrefab;
+    }
+
     public void ClearExistingObstacles()
     {
         GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
-        foreach (GameObject obj in obstacles) Destroy(obj);
-        currentZ = player.position.z + 15f;
+
+        foreach (GameObject obj in obstacles)
+        {
+            Destroy(obj);
+        }
+
+        if (player != null)
+        {
+            currentZ = player.position.z + 15f;
+        }
     }
 }

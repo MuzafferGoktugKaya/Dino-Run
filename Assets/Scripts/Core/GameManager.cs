@@ -37,6 +37,16 @@ public class GameManager : MonoBehaviour
         UpdateScoreUI();
     }
 
+    public void RemoveScore(int amount)
+    {
+        if (isGameOver) return;
+
+        score -= amount;
+        if (score < 0) score = 0;
+
+        UpdateScoreUI();
+    }
+
     private void UpdateScoreUI()
     {
         if (scoreText != null)

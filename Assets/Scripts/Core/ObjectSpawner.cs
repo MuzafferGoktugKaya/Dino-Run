@@ -49,7 +49,7 @@ public class ObjectSpawner : MonoBehaviour
             prefabToSpawn = currentLevel.wormPrefab;
             spawnY = 0f;
         }
-        else if (blackCoinPrefab != null && Random.value < 0.05f) // %5 şansla senin siyah coin
+        else if (blackCoinPrefab != null && Random.value < 0.01f)
         {
             prefabToSpawn = blackCoinPrefab;
             spawnY = currentLevel.coinY;

@@ -35,7 +35,8 @@ public class HellBoostCoin : MonoBehaviour
                 playerMovement.ApplyTemporaryJumpBoost(boostMultiplier, boostDuration);
             }
         }
-
+        
+        GameManager.Instance.PlaySFX(GameManager.Instance.powerUpSFX);
         Destroy(gameObject);
     }
 }

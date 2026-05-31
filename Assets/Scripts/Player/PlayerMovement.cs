@@ -113,6 +113,7 @@ public class PlayerMovement : MonoBehaviour
             Vector3 currentVelocity = rb.linearVelocity;
             currentVelocity.y = jumpForce * currentJumpMultiplier * jumpBoostMultiplier; // Çarpanı buraya uyguladık
             rb.linearVelocity = currentVelocity;
+            GameManager.Instance.PlaySFX(GameManager.Instance.jumpSFX);
         }
 
         if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))

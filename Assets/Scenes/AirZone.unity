@@ -1418,6 +1418,7 @@ GameObject:
   - component: {fileID: 1468363913}
   - component: {fileID: 1468363914}
   - component: {fileID: 1468363915}
+  - component: {fileID: 1468363916}
   m_Layer: 0
   m_Name: FlyingDino
   m_TagString: Untagged
@@ -1714,6 +1715,21 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1468363916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1468363905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 224af150a1c298948a6ee71a3c97e09a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AirGrowthAudioFeedback
+  growthController: {fileID: 1468363913}
+  growthClip: {fileID: 8300000, guid: c44acbed451cdf64ea01fa6f3562b91d, type: 3}
+  volume: 0.807
 --- !u!1 &1474166913
 GameObject:
   m_ObjectHideFlags: 0

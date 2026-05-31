@@ -2011,6 +2011,7 @@ MonoBehaviour:
   levels:
   - {fileID: 11400000, guid: 4aa68e6cddd7d5347b07562c530843ed, type: 2}
   - {fileID: 11400000, guid: 68002774292c45b4e86342f0d4fcb780, type: 2}
+  - {fileID: 11400000, guid: 41b75a0a06d4cf14d99830d94b9292ee, type: 2}
   scoreStep: 5
   fadeAnimator: {fileID: 0}
 --- !u!4 &2049248665

@@ -293,27 +293,27 @@ MonoBehaviour:
   apexStartsAtGrowthStage: 2
   youngPhase:
     phaseName: Young
-    obstacleSpawnInterval: 1.5
+    obstacleSpawnInterval: 1.75
     obstacleSpeedMultiplier: 1
-    meatSpawnInterval: 2.5
+    meatSpawnInterval: 3.2
     alphaWeight: 20
     betaWeight: 65
     gammaWeight: 15
     maxStamina: 100
   adultPhase:
     phaseName: Adult
-    obstacleSpawnInterval: 1.25
-    obstacleSpeedMultiplier: 1.15
-    meatSpawnInterval: 2.4
+    obstacleSpawnInterval: 1.55
+    obstacleSpeedMultiplier: 1.12
+    meatSpawnInterval: 3
     alphaWeight: 20
     betaWeight: 60
     gammaWeight: 20
     maxStamina: 115
   apexPhase:
     phaseName: Apex
-    obstacleSpawnInterval: 1.05
-    obstacleSpeedMultiplier: 1.35
-    meatSpawnInterval: 2.3
+    obstacleSpawnInterval: 1.35
+    obstacleSpeedMultiplier: 1.25
+    meatSpawnInterval: 2.8
     alphaWeight: 15
     betaWeight: 55
     gammaWeight: 30
@@ -550,6 +550,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4434543690602751406, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5688439443021282581, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+      propertyPath: destroyZ
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7421417860557567111, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
@@ -863,15 +871,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AirObstacleSpawner
   obstaclePrefab: {fileID: 1658175302355074599, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
-  spawnInterval: 1.5
+  spawnInterval: 1.6
   spawnZ: 25
   laneDistance: 3
   minLane: -1
   maxLane: 1
   baseHeight: 2
-  heightStep: 1.5
+  heightStep: 1
   minHeightLevel: 0
-  maxHeightLevel: 2
+  maxHeightLevel: 4
 --- !u!4 &1117058736
 Transform:
   m_ObjectHideFlags: 0
@@ -1433,7 +1441,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 50
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -1459,13 +1467,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1411609474}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.043619405, y: 0, z: 0, w: 0.9990483}
+  m_LocalPosition: {x: 0, y: 4.5, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 5, y: 0, z: 0}
 --- !u!114 &1411609478
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1548,13 +1556,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 451dc7dfc76f88e45acefa4642492f51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlyingDinoMovement
-  laneDistance: 3
+  laneDistance: 3.2
   minLane: -1
   maxLane: 1
-  baseHeight: 3
-  heightStep: 1.5
+  baseHeight: 2
+  heightStep: 1
   minHeightLevel: 0
-  maxHeightLevel: 3
+  maxHeightLevel: 4
   moveSmoothness: 10
   staminaController: {fileID: 0}
 --- !u!54 &1468363907
@@ -2047,16 +2055,16 @@ MonoBehaviour:
     weight: 15
   objectPool: {fileID: 225864755}
   useObjectPool: 1
-  spawnInterval: 2.5
-  initialDelay: 1
-  spawnZ: 25
+  spawnInterval: 2.8
+  initialDelay: 1.6
+  spawnZ: 36
   laneDistance: 3
   baseHeight: 2
-  heightStep: 1.5
+  heightStep: 1
   minLane: -1
   maxLane: 1
   minHeightLevel: 0
-  maxHeightLevel: 2
+  maxHeightLevel: 4
 --- !u!4 &1497230377
 Transform:
   m_ObjectHideFlags: 0
@@ -2783,6 +2791,10 @@ PrefabInstance:
     - target: {fileID: 6944731634677108821, guid: 2f5eeb1d603d4504fabf436f83584263, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8810924502251399230, guid: 2f5eeb1d603d4504fabf436f83584263, type: 3}
+      propertyPath: returnZ
+      value: -2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

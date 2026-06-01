@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Collections;
 
@@ -19,6 +20,11 @@ private int nextLevelThreshold;
 
 public float transitionPauseDuration = 0.75f;
 
+[Header("Final Air Zone")]
+public string airZoneSceneName = "AirZone";
+public int airZoneAfterTransitions = 3;
+
+private bool airZoneLoaded = false;
     private int currentLevelIndex = 0;
     private int totalLevelsPassed = 0; 
     private ObjectSpawner spawner;
@@ -74,7 +80,16 @@ void Update()
     {
         totalLevelsPassed++;
 
-        // Sonraki geçiş için yeni random skor aralığı
+        if (!airZoneLoaded && totalLevelsPassed >= airZoneAfterTransitions)
+        {
+            airZoneLoaded = true;
+
+            Debug.Log("AIR ZONE SCENE YUKLENIYOR: " + airZoneSceneName);
+
+            SceneManager.LoadScene(airZoneSceneName);
+            return;
+        }
+
         currentScoreStep = Random.Range(minScoreStep, maxScoreStep + 1);
         nextLevelThreshold += currentScoreStep;
 

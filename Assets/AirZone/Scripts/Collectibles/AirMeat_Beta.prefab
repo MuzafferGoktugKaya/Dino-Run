@@ -262,7 +262,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AirMeatMover
   moveSpeed: 8
-  returnZ: -10
+  returnZ: -4
   forwardWindSpeedBonus: 4
   backwardWindSpeedPenalty: 4
   minimumMoveSpeed: 1

@@ -3679,6 +3679,8 @@ MonoBehaviour:
   minScoreStep: 10
   maxScoreStep: 15
   transitionPauseDuration: 0.75
+  airZoneSceneName: AirZone
+  airZoneAfterTransitions: 0
 --- !u!4 &2049248665
 Transform:
   m_ObjectHideFlags: 0

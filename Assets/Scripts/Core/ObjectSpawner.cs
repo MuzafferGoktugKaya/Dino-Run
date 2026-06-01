@@ -44,7 +44,7 @@ public class ObjectSpawner : MonoBehaviour
         float spawnY = 0f;
         
         bool isBlackCoin = false;
-        bool isObstacle = false; // Nesnenin engel olup olmadığını ayırmak için yeni kontrol
+        bool isObstacle = false;
 
         if (currentLevel.wormPrefab != null && Random.value < currentLevel.wormSpawnChance)
         {
@@ -60,8 +60,6 @@ public class ObjectSpawner : MonoBehaviour
         }
         else if (randomValue < 0.20f)
         {
-            // ÇÖZÜM: Direkt coinPrefab basmak yerine, LevelData ayarlarını dinleyen fonksiyonu çağırıyoruz!
-            // Böylece HellZone'daysak şansa göre HellSpeed, HellJump veya HellNegative coin dönecek.
             prefabToSpawn = GetCoinPrefabForCurrentLevel();
             spawnY = currentLevel.coinY;
         }
@@ -82,9 +80,6 @@ public class ObjectSpawner : MonoBehaviour
         {
             GameObject go = Instantiate(prefabToSpawn, new Vector3(laneX, spawnY, currentZ), Quaternion.identity);
 
-            // TAG YÖNETİMİ DÜZELTİLDİ: 
-            // Sadece gerçek engeller (Worm, Obstacle1, Obstacle2) "Obstacle" tag'ini alır.
-            // Coinlerin (Normal, Speed, Jump, Negative) kendi üzerindeki prefab tag'i (Örn: "coin") korunur!
             if (isBlackCoin)
             {
                 go.tag = "BlackCoin";
@@ -148,7 +143,6 @@ public class ObjectSpawner : MonoBehaviour
 
 public void ClearExistingObstacles()
     {
-        // Temizlenecek tag listesini sadeleştirdik: Normal engeller, standart coinler, kara coinler ve senin verdiğin ortak hellcoins tag'i
         string[] tagsToClear = { "Obstacle", "HellCoins", "NegCoins" };
 
         foreach (string currentTag in tagsToClear)
@@ -163,12 +157,9 @@ public void ClearExistingObstacles()
                 }
             }
             catch (System.Exception)
-            {
-                // Unity'de bu taglerden biri henüz tanımlanmadıysa editörün hata fırlatıp kodu kesmesini engeller
-            }
+            {}
         }
 
-        // Oyuncunun hemen önünde aniden nesne belirmemesi için safe-zone mesafesi
         if (player != null)
         {
             currentZ = player.position.z + 45f;

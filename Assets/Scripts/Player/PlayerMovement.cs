@@ -99,12 +99,10 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleJumpAndSlideInput()
     {
-        // ZIPLAMA GÜNCELLEMESİ
         if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded && !isSliding)
         {
             float currentJumpMultiplier = 1f;
 
-            // Seviye verisinden zıplama çarpanını çek
             if (LevelManager.Instance != null && LevelManager.Instance.GetCurrentLevelData() != null)
             {
                 currentJumpMultiplier = LevelManager.Instance.GetCurrentLevelData().jumpForceMultiplier;

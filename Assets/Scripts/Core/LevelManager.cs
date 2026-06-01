@@ -25,7 +25,6 @@ public float transitionPauseDuration = 0.75f;
     private GroundLooper groundLooper;
     private bool isTransitioning = false;
 
-    // ÇÖZÜM: GameManager'ın hata vermeden "currentLevel" verisini okuyabilmesi için kısa bir Property ekledik
     public LevelData currentLevel
     {
         get
@@ -49,7 +48,6 @@ public float transitionPauseDuration = 0.75f;
         spawner = Object.FindFirstObjectByType<ObjectSpawner>();
         groundLooper = Object.FindFirstObjectByType<GroundLooper>();
         
-        // İlk seviye her zaman listenin ilk elemanıdır (Land Zone)
 currentLevelIndex = 0;
 
 currentScoreStep = Random.Range(minScoreStep, maxScoreStep + 1);
@@ -74,7 +72,6 @@ void Update()
     {
         totalLevelsPassed++;
 
-        // Sonraki geçiş için yeni random skor aralığı
         currentScoreStep = Random.Range(minScoreStep, maxScoreStep + 1);
         nextLevelThreshold += currentScoreStep;
 
@@ -97,12 +94,10 @@ void Update()
         currentLevelIndex = nextIndex;
     }
 
-    // --- ENTEGRE SKOR FADE DESTEKLİ GEÇİŞ ROUTINE'I ---
     IEnumerator NextLevelTransitionRoutine()
     {
         isTransitioning = true;
 
-        // 1. Oyunu durdur
         Time.timeScale = 0f;
 
         if (GameManager.Instance != null && GameManager.Instance.fadePanel != null)
@@ -114,16 +109,13 @@ void Update()
             float fadeDuration = 0.4f;
             float timer = 0f;
 
-            // EKRAN KARARIRKEN SKORU (HUD) DA YUMUŞAKÇA GİZLİYORUZ
             while (timer < fadeDuration)
             {
                 timer += Time.unscaledDeltaTime; 
                 float progress = Mathf.Clamp01(timer / fadeDuration);
                 
-                // Ekranı siyaha boya
                 GameManager.Instance.fadePanel.color = new Color(0f, 0f, 0f, progress);
                 
-                // HUD panelinin alpha değerini 1'den 0'a düşür
                 if (GameManager.Instance.inGameHUDCanvasGroup != null)
                 {
                     GameManager.Instance.inGameHUDCanvasGroup.alpha = 1f - progress;
@@ -132,7 +124,6 @@ void Update()
                 yield return null;
             }
 
-            // Tam kararma anında değerleri sabitleyelim
             GameManager.Instance.fadePanel.color = new Color(0f, 0f, 0f, 1f);
             if (GameManager.Instance.inGameHUDCanvasGroup != null)
             {
@@ -140,23 +131,17 @@ void Update()
             }
         }
 
-        // 2. TAM KARANLIK AN (Arka planda harita ve müzik oyuncu görmeden değişir)
         UpdateSystems(levels[currentLevelIndex]);
 
-        // ENTEGRASYON: Yeni bölge arka planda tam olarak yüklendiği salisede, 
-        // ekran hala siyahken ilk defa giriş yazısı kontrolünü tetikliyoruz.
         if (GameManager.Instance != null && currentLevel != null)
         {
             GameManager.Instance.CheckAndShowZoneIntro(currentLevel);
         }
 
-        // Belirlediğin duraklama süresi kadar karanlık ekranda bekle
         yield return new WaitForSecondsRealtime(transitionPauseDuration);
 
-        // Oyunu tekrar akıtmaya başlıyoruz ki ekran açılırken dinozor koşmaya başlasın
         Time.timeScale = 1f;
 
-        // 3. EKRAN AÇILIRKEN SKORU (HUD) PÜRÜZSÜZCE GERİ GETİRİYORUZ
         if (GameManager.Instance != null && GameManager.Instance.fadePanel != null)
         {
             float fadeDuration = 0.4f;
@@ -167,10 +152,8 @@ void Update()
                 timer += Time.unscaledDeltaTime;
                 float progress = Mathf.Clamp01(timer / fadeDuration);
                 
-                // Ekranı aç
                 GameManager.Instance.fadePanel.color = new Color(0f, 0f, 0f, 1f - progress);
                 
-                // HUD panelinin alpha değerini 0'dan 1'e yükselt
                 if (GameManager.Instance.inGameHUDCanvasGroup != null)
                 {
                     GameManager.Instance.inGameHUDCanvasGroup.alpha = progress;
@@ -179,7 +162,6 @@ void Update()
                 yield return null;
             }
             
-            // Geçiş tamamen bitti, değerleri normal oyun moduna sabitle
             GameManager.Instance.fadePanel.color = new Color(0f, 0f, 0f, 0f);
             if (GameManager.Instance.inGameHUDCanvasGroup != null)
             {

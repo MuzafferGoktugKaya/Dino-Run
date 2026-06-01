@@ -19,7 +19,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip jumpSFX;
     public AudioClip slideSFX;
     public AudioClip coinSFX;
-    public AudioClip powerUpSFX; // Karacoin ilk alındığında çalacak efekt
+    public AudioClip powerUpSFX;
     
     [Header("Yenilgi Sesleri")]
     public AudioClip bonkSFX;         
@@ -62,15 +62,12 @@ public AudioClip negativeCoinSFX;
     public void PlayCoinSFX() => PlaySFX(coinSFX);
     public void PlayBonkSFX() => PlaySFX(bonkSFX);
     public void PlayGameOverJingle() => PlaySFX(gameOverJingle);
-
-    // --- KARACOIN SES MEKANİKLERİ ---
     public void StartPowerUpAudio()
     {
-        PlaySFX(powerUpSFX); // İlk alınış efektini çal
+        PlaySFX(powerUpSFX);
 
         if (bgmSource != null && powerUpBGM != null)
         {
-            // Eğer halihazırda powerup müziği çalmıyorsa mevcut zone müziğini yedekle
             if (!isPowerUpBGMActive)
             {
                 savedZoneBGM = bgmSource.clip;
@@ -86,7 +83,6 @@ public AudioClip negativeCoinSFX;
         if (!isPowerUpBGMActive) return;
         isPowerUpBGMActive = false;
 
-        // Süre bittiğinde yedeklediğimiz orijinal bölge müziğine pürüzsüzce geri dön
         if (bgmSource != null && savedZoneBGM != null)
         {
             ChangeBGM(savedZoneBGM);
@@ -104,9 +100,6 @@ public AudioClip negativeCoinSFX;
     {
         if (bgmSource == null) return;
         if (bgmSource.clip == newBGM && bgmSource.isPlaying) return;
-
-        // Eğer geçiş yapılan müzik powerup müziği değilse ve powerup modu aktifse, 
-        // araya girip düzeni bozmamak için sadece yedek klibi güncelliyoruz
         if (isPowerUpBGMActive && newBGM != powerUpBGM)
         {
             savedZoneBGM = newBGM;
@@ -157,6 +150,6 @@ private IEnumerator FadeOutRoutine(float duration)
     }
 
     bgmSource.Stop();
-    bgmSource.volume = startVolume; // Bir sonraki sefer için sesi sıfırla
+    bgmSource.volume = startVolume;
 }
 }

@@ -29,10 +29,14 @@ public class HellBoostCoin : MonoBehaviour
             if (boostType == BoostType.Speed)
             {
                 playerMovement.ApplyTemporarySpeedBoost(boostMultiplier, boostDuration);
+                
+                GameManager.Instance.ShowNotification("SPEED BOOST!", Color.green);
             }
             else if (boostType == BoostType.Jump)
             {
                 playerMovement.ApplyTemporaryJumpBoost(boostMultiplier, boostDuration);
+                
+                GameManager.Instance.ShowNotification("JUMP BOOST!", Color.green);
             }
         }
         

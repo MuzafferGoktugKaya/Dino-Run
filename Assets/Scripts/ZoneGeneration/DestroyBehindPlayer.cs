@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class DestroyBehindPlayer : MonoBehaviour
 {
-    public float destroyDistance = 30f;
+    public float destroyDistance = 80f;
     private Transform player;
 
     void Start()

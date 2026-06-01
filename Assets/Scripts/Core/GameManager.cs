@@ -37,6 +37,10 @@ public class GameManager : MonoBehaviour
     public TMP_Text gameOverCurrentScoreText;
     public TMP_Text gameOverHighScoreText;
 
+    [Header("Bildirim (Notification) Ayarları")]
+    public TMP_Text notificationText;
+    private Coroutine notificationRoutine;
+
     [Header("Oyun Durumu")]
     public bool isGameStarted = false;
     public bool isGameOver = false;
@@ -54,15 +58,22 @@ public class GameManager : MonoBehaviour
     {
         isGameOver = false;
 
-if (AudioManager.Instance != null)
-    {
-        AudioManager.Instance.ChangeBGM(AudioManager.Instance.titleBGM);
-    }
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.ChangeBGM(AudioManager.Instance.titleBGM);
+        }
 
         if (fadePanel != null)
         {
             fadePanel.color = new Color(0f, 0f, 0f, 0f);
             fadePanel.raycastTarget = false;
+        }
+
+        if (notificationText != null)
+        {
+            Color c = notificationText.color;
+            c.a = 0f;
+            notificationText.color = c;
         }
 
         if (inGameHUDCanvasGroup != null) inGameHUDCanvasGroup.alpha = 1f;
@@ -84,37 +95,77 @@ if (AudioManager.Instance != null)
         }
     }
 
-public void StartGame()
-{
-    // 1. Buton sesini çal
-    if (AudioManager.Instance != null) 
+    public void StartGame()
     {
-        AudioManager.Instance.PlayButtonSFX();
+        if (AudioManager.Instance != null) 
+        {
+            AudioManager.Instance.PlayButtonSFX();
+            AudioManager.Instance.StopBGM(); 
+        }
+
+        isGameStarted = true;
+        Time.timeScale = 1f;
+
+        if (titleScreenPanel != null) titleScreenPanel.SetActive(false);
+        if (inGameHUDPanel != null) inGameHUDPanel.SetActive(true);
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (inGameHUDCanvasGroup != null) inGameHUDCanvasGroup.alpha = 1f;
         
-        // 2. MÜZİĞİ ANINDA KES (Fade olmadan)
-        AudioManager.Instance.StopBGM(); 
+        score = 0;
+        UpdateScoreUI();
+
+        if (LevelManager.Instance != null && LevelManager.Instance.currentLevel != null)
+        {
+            CheckAndShowZoneIntro(LevelManager.Instance.currentLevel);
+            LevelManager.Instance.PlayCurrentZoneBGM();
+        }
     }
 
-    // 3. Oyun değişkenlerini ayarla
-    isGameStarted = true;
-    Time.timeScale = 1f;
-
-    // 4. Panelleri ayarla
-    if (titleScreenPanel != null) titleScreenPanel.SetActive(false);
-    if (inGameHUDPanel != null) inGameHUDPanel.SetActive(true);
-    if (gameOverPanel != null) gameOverPanel.SetActive(false);
-    if (inGameHUDCanvasGroup != null) inGameHUDCanvasGroup.alpha = 1f;
-    
-    score = 0;
-    UpdateScoreUI();
-
-    // 5. Yeni müziği başlat
-    if (LevelManager.Instance != null && LevelManager.Instance.currentLevel != null)
+    public void ShowNotification(string message, Color textColor)
     {
-        CheckAndShowZoneIntro(LevelManager.Instance.currentLevel);
-        LevelManager.Instance.PlayCurrentZoneBGM();
+        if (notificationText == null) return;
+
+        if (notificationRoutine != null)
+        {
+            StopCoroutine(notificationRoutine);
+        }
+
+        notificationText.text = message;
+        notificationText.color = textColor;
+
+        notificationRoutine = StartCoroutine(NotificationFadeSequenceRoutine());
     }
-}
+
+    private IEnumerator NotificationFadeSequenceRoutine()
+    {
+        float duration = 0.25f; // Fade In süresi
+        float elapsed = 0f;
+        Color c = notificationText.color;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime; // Oyun durduğunda bile düzgün çalışması için unscaled kullandık
+            c.a = Mathf.Lerp(0f, 1f, elapsed / duration);
+            notificationText.color = c;
+            yield return null;
+        }
+        c.a = 1f;
+        notificationText.color = c;
+
+        yield return new WaitForSecondsRealtime(0.8f);
+
+        duration = 0.4f;
+        elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            c.a = Mathf.Lerp(1f, 0f, elapsed / duration);
+            notificationText.color = c;
+            yield return null;
+        }
+        c.a = 0f;
+        notificationText.color = c;
+    }
 
     public void CheckAndShowZoneIntro(LevelData zoneData)
     {

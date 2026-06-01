@@ -22,7 +22,7 @@ public class GroundLooper : MonoBehaviour
             if (t.position.z > farthestTile.position.z) farthestTile = t;
         }
 
-        if (player.position.z > nearestTile.position.z + tileLength / 2f)
+        if (player.position.z > nearestTile.position.z + tileLength / 0.5f)
         {
             nearestTile.position = new Vector3(nearestTile.position.x, nearestTile.position.y, farthestTile.position.z + tileLength);
             UpdateTileMaterial(nearestTile);
@@ -39,12 +39,9 @@ private void UpdateTileMaterial(Transform tile)
 {
     if (tile == null || currentLevel == null) return;
 
-    // 1. Ana objenin (yanların) materyalini değiştir
     Renderer mainRend = tile.GetComponent<Renderer>();
     if (mainRend != null) mainRend.material = currentLevel.sideMaterial;
 
-    // 2. Altındaki "RoadStrip" objesini bul ve onun materyalini de değiştir
-    // Transform.Find kullanırken ismin hiyerarşidekiyle (RoadStrip) tam eşleştiğinden emin ol
     Transform roadStrip = tile.Find("RoadStrip"); 
     if (roadStrip != null)
     {

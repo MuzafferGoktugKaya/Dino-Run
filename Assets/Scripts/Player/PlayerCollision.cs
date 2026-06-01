@@ -5,13 +5,27 @@ public class PlayerCollision : MonoBehaviour
 {
     [Header("Ayarlar")]
     public bool isInvincible = false;
-    public Color powerUpColor = Color.black; // Kararma rengi
+    public Color powerUpColor = Color.black;
     private Color originalColor;
     private SkinnedMeshRenderer meshRenderer;
 
+    private CapsuleCollider playerCollider;
+    private Rigidbody playerRigidbody;
+
     void Start()
     {
-        // Dinozorun modelindeki renderer'ı alıyoruz
+        playerCollider = GetComponent<CapsuleCollider>();
+        if (playerCollider == null)
+        {
+            playerCollider = GetComponentInChildren<CapsuleCollider>();
+        }
+
+        playerRigidbody = GetComponent<Rigidbody>();
+        if (playerRigidbody == null)
+        {
+            playerRigidbody = GetComponentInChildren<Rigidbody>();
+        }
+
         meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
         if (meshRenderer != null)
         {
@@ -21,22 +35,27 @@ public class PlayerCollision : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Obstacle"))
+        if (collision.gameObject.CompareTag("Obstacle") && !isInvincible)
         {
-            if (!isInvincible)
-            {
-                GameManager.Instance.GameOver();
-            }
-            else
-            {
-                Debug.Log("Ölümsüzsün, engele çarptın ama yanmadın!");
-            }
+            GameManager.Instance.GameOver();
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Coin"))
+        {
+            Debug.Log("Coin toplandı: " + other.gameObject.name);
+        }
+
+        if (other.CompareTag("Obstacle") && !isInvincible)
+        {
+            GameManager.Instance.GameOver();
         }
     }
 
     public void StartInvincibility()
     {
-        // Eğer zaten aktifse coroutine'i durdurup yeniden başlatıyoruz
         StopAllCoroutines(); 
         StartCoroutine(InvincibilityRoutine());
     }
@@ -44,23 +63,37 @@ public class PlayerCollision : MonoBehaviour
     private IEnumerator InvincibilityRoutine()
     {
         isInvincible = true;
+
+        int playerLayer = gameObject.layer;
+        int obstacleLayer = LayerMask.NameToLayer("Obstacle");
+
+        if (obstacleLayer != -1)
+        {
+            Physics.IgnoreLayerCollision(playerLayer, obstacleLayer, true);
+        }
+        else
+        {
+            Debug.LogWarning("Unity'de 'Obstacle' adında bir Layer bulunamadı! Karakterin pushlanmasını engellemek için lütfen katman atamasını yapın.");
+        }
         
-        // 1. Rengi değiştir
         if (meshRenderer != null) meshRenderer.material.color = powerUpColor;
 
-        // 2. Müzik ve sesleri AudioManager üzerinden yönet
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.StartPowerUpAudio();
         }
 
-        Debug.Log("Ölümsüzlük ve Frenzy Modu BAŞLADI!");
+        Debug.Log("Frenzy Modu BAŞLADI! Zıplama aktif, engeller yok sayılıyor.");
 
-        // 5 saniye bekle
         yield return new WaitForSeconds(5f);
 
-        // 3. Her şeyi normale döndür
         isInvincible = false;
+
+        if (obstacleLayer != -1)
+        {
+            Physics.IgnoreLayerCollision(playerLayer, obstacleLayer, false);
+        }
+
         if (meshRenderer != null) meshRenderer.material.color = originalColor;
 
         if (AudioManager.Instance != null)
@@ -68,6 +101,6 @@ public class PlayerCollision : MonoBehaviour
             AudioManager.Instance.StopPowerUpAudio();
         }
 
-        Debug.Log("Ölümsüzlük ve Frenzy Modu BİTTİ!");
+        Debug.Log("Frenzy Modu BİTTİ! Engeller tekrar katı hale geldi.");
     }
 }

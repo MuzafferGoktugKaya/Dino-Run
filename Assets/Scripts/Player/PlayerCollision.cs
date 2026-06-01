@@ -11,26 +11,21 @@ public class PlayerCollision : MonoBehaviour
 
     private CapsuleCollider playerCollider;
     private Rigidbody playerRigidbody;
+    private PlayerMovement playerMovement;
 
     void Start()
     {
         playerCollider = GetComponent<CapsuleCollider>();
-        if (playerCollider == null)
-        {
-            playerCollider = GetComponentInChildren<CapsuleCollider>();
-        }
+        if (playerCollider == null) playerCollider = GetComponentInChildren<CapsuleCollider>();
 
         playerRigidbody = GetComponent<Rigidbody>();
-        if (playerRigidbody == null)
-        {
-            playerRigidbody = GetComponentInChildren<Rigidbody>();
-        }
+        if (playerRigidbody == null) playerRigidbody = GetComponentInChildren<Rigidbody>();
 
         meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
-        if (meshRenderer != null)
-        {
-            originalColor = meshRenderer.material.color;
-        }
+        if (meshRenderer != null) originalColor = meshRenderer.material.color;
+
+        playerMovement = GetComponent<PlayerMovement>();
+        if (playerMovement == null) playerMovement = GetComponentInChildren<PlayerMovement>();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -43,11 +38,6 @@ public class PlayerCollision : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Coin"))
-        {
-            Debug.Log("Coin toplandı: " + other.gameObject.name);
-        }
-
         if (other.CompareTag("Obstacle") && !isInvincible)
         {
             GameManager.Instance.GameOver();
@@ -64,6 +54,12 @@ public class PlayerCollision : MonoBehaviour
     {
         isInvincible = true;
 
+        if (playerMovement != null)
+        {
+            playerMovement.EndSlide(); 
+            playerMovement.canSlide = false; 
+        }
+
         int playerLayer = gameObject.layer;
         int obstacleLayer = LayerMask.NameToLayer("Obstacle");
 
@@ -73,21 +69,23 @@ public class PlayerCollision : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Unity'de 'Obstacle' adında bir Layer bulunamadı! Karakterin pushlanmasını engellemek için lütfen katman atamasını yapın.");
+            Debug.LogWarning("Unity'de 'Obstacle' adında bir Layer bulunamadı! Lütfen katman atamasını kontrol edin.");
         }
         
         if (meshRenderer != null) meshRenderer.material.color = powerUpColor;
 
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.StartPowerUpAudio();
-        }
+        if (AudioManager.Instance != null) AudioManager.Instance.StartPowerUpAudio();
 
-        Debug.Log("Frenzy Modu BAŞLADI! Zıplama aktif, engeller yok sayılıyor.");
+        Debug.Log("Frenzy Modu BAŞLADI! Slide kilitlendi, engeller yok sayılıyor.");
 
         yield return new WaitForSeconds(5f);
 
         isInvincible = false;
+
+        if (playerMovement != null)
+        {
+            playerMovement.canSlide = true;
+        }
 
         if (obstacleLayer != -1)
         {
@@ -96,11 +94,8 @@ public class PlayerCollision : MonoBehaviour
 
         if (meshRenderer != null) meshRenderer.material.color = originalColor;
 
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.StopPowerUpAudio();
-        }
+        if (AudioManager.Instance != null) AudioManager.Instance.StopPowerUpAudio();
 
-        Debug.Log("Frenzy Modu BİTTİ! Engeller tekrar katı hale geldi.");
+        Debug.Log("Frenzy Modu BİTTİ! Slide açıldı, engeller tekrar katı.");
     }
 }

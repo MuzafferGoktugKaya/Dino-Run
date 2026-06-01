@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Forward Movement")]
@@ -22,6 +23,9 @@ public class PlayerMovement : MonoBehaviour
     public float slideDuration = 0.85f;
     public float slideColliderHeight = 1f;
     public Vector3 slideColliderCenter = new Vector3(0f, -0.25f, 0f);
+    
+    [HideInInspector] 
+    public bool canSlide = true; 
 
     [Header("Visual Slide")]
     public Transform visualRoot;
@@ -109,12 +113,12 @@ public class PlayerMovement : MonoBehaviour
             }
 
             Vector3 currentVelocity = rb.linearVelocity;
-            currentVelocity.y = jumpForce * currentJumpMultiplier * jumpBoostMultiplier; // Çarpanı buraya uyguladık
+            currentVelocity.y = jumpForce * currentJumpMultiplier * jumpBoostMultiplier;
             rb.linearVelocity = currentVelocity;
             AudioManager.Instance.PlaySFX(AudioManager.Instance.jumpSFX);
         }
 
-        if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+        if ((Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) && canSlide)
         {
             if (isGrounded && !isSliding) StartSlide();
             else if (!isGrounded)
@@ -174,10 +178,14 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleAirSlideLanding()
     {
-        if (slideQueuedFromAir && isGrounded && !isSliding)
+        if (slideQueuedFromAir && isGrounded && !isSliding && canSlide)
         {
             slideQueuedFromAir = false;
             StartSlide();
+        }
+        else if (!canSlide)
+        {
+            slideQueuedFromAir = false;
         }
     }
 
@@ -194,9 +202,10 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void EndSlide()
+    public void EndSlide()
     {
         isSliding = false;
+        slideQueuedFromAir = false;
         capsuleCollider.height = normalColliderHeight;
         capsuleCollider.center = normalColliderCenter;
     }
@@ -215,23 +224,16 @@ public class PlayerMovement : MonoBehaviour
         visualRoot.localRotation = Quaternion.Lerp(visualRoot.localRotation, targetRotation, currentLerpSpeed * Time.deltaTime);
         visualRoot.localScale = Vector3.Lerp(visualRoot.localScale, targetScale, currentLerpSpeed * Time.deltaTime);
     }
+
     public void ApplyTemporarySpeedBoost(float multiplier, float duration)
     {
-        if (speedBoostRoutine != null)
-        {
-            StopCoroutine(speedBoostRoutine);
-        }
-
+        if (speedBoostRoutine != null) StopCoroutine(speedBoostRoutine);
         speedBoostRoutine = StartCoroutine(SpeedBoostCoroutine(multiplier, duration));
     }
 
     public void ApplyTemporaryJumpBoost(float multiplier, float duration)
     {
-        if (jumpBoostRoutine != null)
-        {
-            StopCoroutine(jumpBoostRoutine);
-        }
-
+        if (jumpBoostRoutine != null) StopCoroutine(jumpBoostRoutine);
         jumpBoostRoutine = StartCoroutine(JumpBoostCoroutine(multiplier, duration));
     }
 
@@ -250,20 +252,11 @@ public class PlayerMovement : MonoBehaviour
         jumpBoostMultiplier = 1f;
         jumpBoostRoutine = null;
     }
+
     public void ResetTemporaryBoosts()
     {
-        if (speedBoostRoutine != null)
-        {
-            StopCoroutine(speedBoostRoutine);
-            speedBoostRoutine = null;
-        }
-
-        if (jumpBoostRoutine != null)
-        {
-            StopCoroutine(jumpBoostRoutine);
-            jumpBoostRoutine = null;
-        }
-
+        if (speedBoostRoutine != null) { StopCoroutine(speedBoostRoutine); speedBoostRoutine = null; }
+        if (jumpBoostRoutine != null) { StopCoroutine(jumpBoostRoutine); jumpBoostRoutine = null; }
         speedBoostMultiplier = 1f;
         jumpBoostMultiplier = 1f;
     }

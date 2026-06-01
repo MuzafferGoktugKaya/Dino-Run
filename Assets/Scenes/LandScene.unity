@@ -2069,7 +2069,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -619, y: 335}
+  m_AnchoredPosition: {x: -619, y: 390.3}
   m_SizeDelta: {x: 220, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &554479563
@@ -3712,6 +3712,7 @@ MonoBehaviour:
   slideDuration: 0.85
   slideColliderHeight: 1
   slideColliderCenter: {x: 0, y: -0.25, z: 0}
+  canSlide: 1
   visualRoot: {fileID: 337054489}
   slideVisualLocalPosition: {x: 0, y: -0.55, z: 0.25}
   slideVisualLocalRotation: {x: 32, y: 0, z: 0}

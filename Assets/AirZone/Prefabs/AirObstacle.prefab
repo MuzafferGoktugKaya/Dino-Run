@@ -155,7 +155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AirObstacle
   moveSpeed: 8
-  destroyZ: -2
+  destroyZ: -3
   forwardWindSpeedBonus: 4
   backwardWindSpeedPenalty: 4
   minimumMoveSpeed: 1

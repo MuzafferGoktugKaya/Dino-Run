@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     public static bool shouldSkipTitle = false; 
 
+    private static int sessionHighScore = 0;
+
     [Header("UI Panelleri")]
     public GameObject titleScreenPanel;
     public GameObject inGameHUDPanel;
@@ -22,7 +24,6 @@ public class GameManager : MonoBehaviour
     public TMP_Text zoneIntroText;    
 
     [Header("HUD Fade Ayarı")]
-    [Tooltip("Zone geçişlerinde HUD'ın (Skorun) yumuşakça kaybolup gelmesi için Canvas Group")]
     public CanvasGroup inGameHUDCanvasGroup;
 
     [Header("Game Over Sinematik Ayarları")]
@@ -51,7 +52,6 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        PlayerPrefs.DeleteKey("HighScore");
     }
 
     private void Start()
@@ -78,6 +78,8 @@ public class GameManager : MonoBehaviour
 
         if (inGameHUDCanvasGroup != null) inGameHUDCanvasGroup.alpha = 1f;
         if (zoneIntroPanel != null) zoneIntroPanel.SetActive(false); 
+
+        UpdateGameOverHighScoreUI();
 
         if (shouldSkipTitle)
         {
@@ -138,13 +140,13 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator NotificationFadeSequenceRoutine()
     {
-        float duration = 0.25f; // Fade In süresi
+        float duration = 0.25f; 
         float elapsed = 0f;
         Color c = notificationText.color;
 
         while (elapsed < duration)
         {
-            elapsed += Time.unscaledDeltaTime; // Oyun durduğunda bile düzgün çalışması için unscaled kullandık
+            elapsed += Time.unscaledDeltaTime; 
             c.a = Mathf.Lerp(0f, 1f, elapsed / duration);
             notificationText.color = c;
             yield return null;
@@ -170,7 +172,6 @@ public class GameManager : MonoBehaviour
     public void CheckAndShowZoneIntro(LevelData zoneData)
     {
         if (zoneData == null) return;
-
         string uniqueZoneKey = zoneData.name; 
 
         if (!visitedZones.Contains(uniqueZoneKey))
@@ -243,6 +244,14 @@ public class GameManager : MonoBehaviour
             scoreText.text = "Score: " + score;
     }
 
+    private void UpdateGameOverHighScoreUI()
+    {
+        if (gameOverHighScoreText != null)
+        {
+            gameOverHighScoreText.text = "High Score: " + sessionHighScore;
+        }
+    }
+
     public void GameOver()
     {
         if (isGameOver) return;
@@ -253,6 +262,10 @@ public class GameManager : MonoBehaviour
         {
             AudioManager.Instance.StopBGM();
             AudioManager.Instance.PlayBonkSFX();
+        }
+        if (score > sessionHighScore)
+        {
+            sessionHighScore = score;
         }
 
         StartCoroutine(GameOverSequenceRoutine());
@@ -266,16 +279,8 @@ public class GameManager : MonoBehaviour
         if (inGameHUDPanel != null) inGameHUDPanel.SetActive(false);
         if (gameOverPanel != null) gameOverPanel.SetActive(true);
 
-        int highScore = PlayerPrefs.GetInt("HighScore", 0);
-        if (score > highScore)
-        {
-            highScore = score;
-            PlayerPrefs.SetInt("HighScore", highScore);
-            PlayerPrefs.Save();
-        }
-
         if (gameOverCurrentScoreText != null) gameOverCurrentScoreText.text = "Score: " + score;
-        if (gameOverHighScoreText != null) gameOverHighScoreText.text = "High Score: " + highScore;
+        UpdateGameOverHighScoreUI();
 
         yield return new WaitForSecondsRealtime(0.15f);
         

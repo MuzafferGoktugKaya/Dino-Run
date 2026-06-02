@@ -449,6 +449,8 @@ MonoBehaviour:
     prewarmCount: 8
   - prefab: {fileID: 4377385847731375313, guid: 1a72a6495c3b4b74b96a194041c2ea73, type: 3}
     prewarmCount: 3
+  - prefab: {fileID: 1658175302355074599, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+    prewarmCount: 7
   pooledParent: {fileID: 0}
 --- !u!4 &225864756
 Transform:
@@ -1097,6 +1099,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AirObstacleSpawner
   obstaclePrefab: {fileID: 1658175302355074599, guid: cfe41293f69bffc459dc95da52dad84d, type: 3}
+  objectPool: {fileID: 225864755}
+  useObjectPool: 1
   spawnInterval: 1.6
   spawnZ: 25
   laneDistance: 3

@@ -29,7 +29,7 @@ public class AirObstacle : MonoBehaviour
 
         if (transform.position.z <= destroyZ)
         {
-            Destroy(gameObject);
+            ReturnToPoolOrDestroy();
         }
     }
 
@@ -57,5 +57,16 @@ public class AirObstacle : MonoBehaviour
         finalMoveSpeed *= difficultySpeedMultiplier;
 
         return Mathf.Max(minimumMoveSpeed, finalMoveSpeed);
+    }
+
+    private void ReturnToPoolOrDestroy()
+    {
+        if (TryGetComponent(out AirPooledObject pooledObject))
+        {
+            pooledObject.ReturnToPool();
+            return;
+        }
+
+        Destroy(gameObject);
     }
 }

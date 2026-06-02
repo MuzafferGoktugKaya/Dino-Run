@@ -5,6 +5,10 @@ public class AirObstacleSpawner : MonoBehaviour
     [Header("Obstacle")]
     [SerializeField] private GameObject obstaclePrefab;
 
+    [Header("Object Pool")]
+    [SerializeField] private AirObjectPool objectPool;
+    [SerializeField] private bool useObjectPool = true;
+
     [Header("Spawn Settings")]
     [SerializeField] private float spawnInterval = 1.5f;
     [SerializeField] private float spawnZ = 25f;
@@ -23,9 +27,16 @@ public class AirObstacleSpawner : MonoBehaviour
     private float spawnTimer;
     private float obstacleSpeedMultiplier = 1f;
 
+    private void Awake()
+    {
+        if (objectPool == null)
+        {
+            objectPool = FindFirstObjectByType<AirObjectPool>();
+        }
+    }
+
     private void Update()
     {
-        // Counts time between obstacle spawns.
         spawnTimer += Time.deltaTime;
 
         if (spawnTimer >= spawnInterval)
@@ -47,20 +58,27 @@ public class AirObstacleSpawner : MonoBehaviour
 
     private void SpawnObstacle()
     {
-        // Selects a random lane and height level for the new obstacle.
         int randomLane = Random.Range(minLane, maxLane + 1);
         int randomHeightLevel = Random.Range(minHeightLevel, maxHeightLevel + 1);
 
-        // Converts lane and height level values into world position.
         float spawnX = randomLane * laneDistance;
         float spawnY = baseHeight + randomHeightLevel * heightStep;
 
         Vector3 spawnPosition = new Vector3(spawnX, spawnY, spawnZ);
 
-        // Creates the obstacle prefab at the calculated position.
-        GameObject obstacleInstance = Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
+        GameObject obstacleInstance;
 
-        if (obstacleInstance.TryGetComponent(out AirObstacle obstacle))
+        if (useObjectPool && objectPool != null)
+        {
+            obstacleInstance = objectPool.Get(obstaclePrefab, spawnPosition, Quaternion.identity);
+        }
+        else
+        {
+            obstacleInstance = Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
+        }
+
+        if (obstacleInstance != null &&
+            obstacleInstance.TryGetComponent(out AirObstacle obstacle))
         {
             obstacle.SetDifficultySpeedMultiplier(obstacleSpeedMultiplier);
         }

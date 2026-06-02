@@ -34,7 +34,16 @@ public class FlyingDinoCollisionHandler : MonoBehaviour
 
             UpdateHealthBar();
 
-            Destroy(other.gameObject);
+            AirPooledObject pooledObject = other.GetComponentInParent<AirPooledObject>();
+
+            if (pooledObject != null)
+            {
+                pooledObject.ReturnToPool();
+            }
+            else
+            {
+                Destroy(other.gameObject);
+            }
 
             if (currentHealth <= 0)
             {

@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ef8d11a808a10b4387d9ede3dc82cdc, type: 3}
+  m_Name: WaterData
+  m_EditorClassIdentifier: Assembly-CSharp::LevelData
+  roadMaterial: {fileID: 2100000, guid: 5f58fc42b9c4e2b48bb5371b2b3b31db, type: 2}
+  sideMaterial: {fileID: 2100000, guid: 515b33468c62d804d88591d32bbb19a3, type: 2}
+  themeColor:
+    r: 0.18
+    g: 0.72
+    b: 0.95
+    a: 1
+  skyboxMaterial: {fileID: 2100000, guid: b749812e6c5eebc4caf0681cf4b1a23a, type: 2}
+  zoneBGM: {fileID: 8300000, guid: b64cc5193a60cf34d93149700df311cd, type: 3}
+  displayName: WaterZone
+  firstTimeDescription: 'The sand is limiting your jumping abilities!
+
+    Be on
+    guard for vertical attacks!'
+  transitionMessage: Entering WaterZone - lower jumps, vertical threats!
+  coinPrefab: {fileID: 5871584920262485677, guid: e4aaad571dcefbf4eb23d33b58567c75, type: 3}
+  ObstaclePrefab1: {fileID: 905318158338283086, guid: 9e3e9ce34f0c0c148aa4f2c971c98d65, type: 3}
+  ObstaclePrefab2: {fileID: 9186022904789144307, guid: 52fe702729be5364a8469fd08413198a, type: 3}
+  hellSpeedCoinPrefab: {fileID: 0}
+  hellJumpCoinPrefab: {fileID: 0}
+  hellNegativeCoinPrefab: {fileID: 0}
+  hellSpecialCoinChance: 0
+  hellNegativeCoinChance: 0
+  coinY: 1
+  obstacle1Y: 0
+  obstacle2Y: 0
+  forwardSpeedMultiplier: 1
+  jumpForceMultiplier: 0.5
+  wormPrefab: {fileID: 8191177356695025370, guid: 728721fc38cbb1c4a8e3bc82132350e8, type: 3}
+  wormSpawnChance: 0.05

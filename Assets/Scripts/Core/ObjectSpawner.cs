@@ -1,0 +1,168 @@
+using UnityEngine;
+
+public class ObjectSpawner : MonoBehaviour
+{
+    public LevelData currentLevel;
+    public Transform player;
+    public float startZ = 20f;
+    public float spawnStep = 15f;
+    public float spawnDistanceAhead = 120f;
+    public float laneDistance = 3f;
+
+    public GameObject blackCoinPrefab;
+
+    private float currentZ;
+
+    void Start()
+    {
+        currentZ = startZ;
+    }
+
+    void Update()
+    {
+        SpawnUntilAhead();
+    }
+
+    void SpawnUntilAhead()
+    {
+        if (player == null || currentLevel == null) return;
+
+        while (currentZ < player.position.z + spawnDistanceAhead)
+        {
+            SpawnNext();
+            currentZ += spawnStep;
+        }
+    }
+
+    void SpawnNext()
+    {
+        int randomLane = Random.Range(0, 3);
+        float laneX = (randomLane - 1) * laneDistance;
+        float randomValue = Random.value;
+
+        GameObject prefabToSpawn = null;
+        float spawnY = 0f;
+        
+        bool isBlackCoin = false;
+        bool isObstacle = false;
+
+        if (currentLevel.wormPrefab != null && Random.value < currentLevel.wormSpawnChance)
+        {
+            prefabToSpawn = currentLevel.wormPrefab;
+            spawnY = 0f;
+            isObstacle = true;
+        }
+        else if (blackCoinPrefab != null && Random.value < 0.01f)
+        {
+            prefabToSpawn = blackCoinPrefab;
+            spawnY = currentLevel.coinY;
+            isBlackCoin = true;
+        }
+        else if (randomValue < 0.20f)
+        {
+            prefabToSpawn = GetCoinPrefabForCurrentLevel();
+            spawnY = currentLevel.coinY;
+        }
+        else if (randomValue < 0.40f)
+        {
+            prefabToSpawn = currentLevel.ObstaclePrefab1;
+            spawnY = currentLevel.obstacle1Y;
+            isObstacle = true;
+        }
+        else if (randomValue < 0.60f)
+        {
+            prefabToSpawn = currentLevel.ObstaclePrefab2;
+            spawnY = currentLevel.obstacle2Y;
+            isObstacle = true;
+        }
+
+        if (prefabToSpawn != null)
+        {
+            GameObject go = Instantiate(prefabToSpawn, new Vector3(laneX, spawnY, currentZ), Quaternion.identity);
+
+            if (isBlackCoin)
+            {
+                go.tag = "BlackCoin";
+            }
+            else if (isObstacle)
+            {
+                go.tag = "Obstacle";
+            }
+        }
+    }
+
+    GameObject GetCoinPrefabForCurrentLevel()
+    {
+        if (currentLevel == null) return null;
+
+        bool hasNegativeCoin =
+            currentLevel.hellNegativeCoinChance > 0f &&
+            currentLevel.hellNegativeCoinPrefab != null;
+
+        if (hasNegativeCoin && Random.value < currentLevel.hellNegativeCoinChance)
+        {
+            return currentLevel.hellNegativeCoinPrefab;
+        }
+
+        bool hasHellSpecialCoins =
+            currentLevel.hellSpecialCoinChance > 0f &&
+            (currentLevel.hellSpeedCoinPrefab != null || currentLevel.hellJumpCoinPrefab != null);
+
+        if (!hasHellSpecialCoins)
+        {
+            return currentLevel.coinPrefab;
+        }
+
+        if (Random.value > currentLevel.hellSpecialCoinChance)
+        {
+            return currentLevel.coinPrefab;
+        }
+
+        bool canSpawnSpeedCoin = currentLevel.hellSpeedCoinPrefab != null;
+        bool canSpawnJumpCoin = currentLevel.hellJumpCoinPrefab != null;
+
+        if (canSpawnSpeedCoin && canSpawnJumpCoin)
+        {
+            return Random.value < 0.5f
+                ? currentLevel.hellSpeedCoinPrefab
+                : currentLevel.hellJumpCoinPrefab;
+        }
+
+        if (canSpawnSpeedCoin)
+        {
+            return currentLevel.hellSpeedCoinPrefab;
+        }
+
+        if (canSpawnJumpCoin)
+        {
+            return currentLevel.hellJumpCoinPrefab;
+        }
+
+        return currentLevel.coinPrefab;
+    }
+
+public void ClearExistingObstacles()
+    {
+        string[] tagsToClear = { "Obstacle", "HellCoins", "NegCoins" };
+
+        foreach (string currentTag in tagsToClear)
+        {
+            try
+            {
+                GameObject[] objectsWithTag = GameObject.FindGameObjectsWithTag(currentTag);
+                
+                foreach (GameObject obj in objectsWithTag)
+                {
+                    Destroy(obj);
+                }
+            }
+            catch (System.Exception)
+            {}
+        }
+
+        if (player != null)
+        {
+            currentZ = player.position.z + 45f;
+        }
+    }
+}

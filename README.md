@@ -1,0 +1,142 @@
+# Dino-Run
+
+Temple Run inspired dinosaur running game.
+
+## Gameplay Improvements Added
+
+These polish changes were added after the first project version so the game feels smoother and easier to present:
+
+- Reworked `AudioManager` with BGM crossfade, persistent master/music/SFX volume values, mute support, and small SFX pitch variation so repeated pickups and jumps feel less flat.
+- Reworked zone transitions in `LevelManager` with smoother fade timing, zone announcement notifications, pause-safe transitions, and gradually increasing transition score intervals.
+- Added persistent high score saving in `GameManager` using `PlayerPrefs`, plus a clear `NEW BEST!` game-over message.
+- Added pause/resume support with `P` or `Esc`, optional pause panel support, and safer restart/title reload fade.
+- Added optional touch/swipe controls to `PlayerMovement`: left/right lane change, swipe up jump, swipe down slide or fast-fall.
+- Added zone display names, theme colors, and transition messages to the `LevelData` assets so every environment introduces itself clearly.
+- Cleaned merge conflict markers from this README and organized the credits.
+
+
+## Additional Gameplay Systems Added by Orhan
+
+These later changes were implemented as individual contribution evidence for the CENG454 project:
+
+- Added a three-health damage flow in `PlayerCollision`: obstacles reduce health first, short hit invincibility prevents unfair repeated damage, and game over happens after health reaches zero.
+- Added combo scoring in `GameManager`: collecting coins quickly builds a combo streak, gives score bonuses, and resets after timeout or negative feedback.
+- Added `MissionManager`: session missions track coin collection, zone transitions, and combo milestones, then reward completed missions with bonus score.
+- Added safer negative coin handling: negative coins now reset combo and show feedback without breaking when audio or UI references are missing.
+- Added optional HUD hooks for health, combo, and mission text. If no scene text is assigned, the systems still work through notifications and do not crash.
+- Verified the project with Unity 6000.3.11f1 batchmode compile/import after the changes.
+
+## LandZone Credits
+
+### Ground Material
+Used as the main and side textures in LandZone.  
+Author: A dog's life software  
+Source: https://assetstore.unity.com/packages/2d/textures-materials/floors/outdoor-ground-textures-12555?srsltid=AfmBOoqwu1wJ_MFQLSA-WyXAYEe5uwebHj0fDToMAKOXGD8Nb1mo2B4M
+
+### Carnotaurus Model & Animations
+Used as the main player model for every part of the game.  
+Author: dead tubby's  
+Source: https://sketchfab.com/3d-models/carnotaurus-from-unity-6cb52c905aa34ee7b45db41904632c1b
+
+### Skybox
+Used as the LandZone skybox and background environment.  
+Asset from Mikhail Selnihin  
+Source: https://www.artstation.com/artwork/GX03kB
+
+### Rock Prefabs
+Used as the jumpable obstacle for LandZone, also used in HellZone with a different color palette.  
+Author: bazsa  
+Source: https://free3d.com/3d-model/stone-2969.html
+
+### Pteranodon Longiceps
+Used as the sliding obstacle for LandZone, also used in HellZone.  
+Author: Kyan0s  
+Source: https://sketchfab.com/3d-models/pteranodon-longiceps-144d0f815d5341bba6de95786a1b9343
+
+## AirZone Credits
+
+### Clouds Model
+Used as cloud visuals in the AirZone scene.  
+Author: gallanonim  
+Source: https://sketchfab.com/3d-models/clouds-model-to-blender-14b33cd015b048548670c7a696d71f1e
+
+### Animated Flying Pterodactyl Dinosaur Loop
+Used as the main flying dinosaur character model and animation in AirZone.  
+Author: LasquetiSpice  
+Source: https://sketchfab.com/3d-models/animated-flying-pteradactal-dinosaur-loop-09f6b1ff7bfd4a2d8d9c0b9827f2a708
+
+### Skybox 102
+Used as the AirZone skybox and background environment.  
+Asset from FreeStylized.  
+Source: https://freestylized.com/skybox/sky_102/
+
+### AirZone HUD Visuals
+The left-side HUD visuals used in AirZone were generated with Gemini AI.  
+The generated visuals were edited and exported as PNG files using Photopea, then integrated into Unity as bar-style HUD elements.
+
+### AirZone Sounds
+Air_Growth: Sound Effect by DRAGON-STUDIO from Pixabay.  
+Air_Pickup: Sound Effect by freesound_community from Pixabay.  
+Air_Wind: Sound Effect by soundreality from Pixabay.  
+Air_Wing: Sound Effect by freesound_community from Pixabay.
+
+## WaterZone Credits
+
+### Worm Model
+Used as vertical moving sand enemy, exclusive to WaterZone.  
+Author: SR Studios Kerala  
+Source: https://assetstore.unity.com/packages/3d/characters/worms-free-342926
+
+### Skybox
+Used as the WaterZone skybox and background environment.  
+Asset from 7030-Artwork  
+Source: https://3docean.net/item/water-skybox-pack-voli/15510836
+
+### Sand Material
+Used as the main road texture in WaterZone.  
+Author: Nobiax / Yughues  
+Source: https://assetstore.unity.com/packages/2d/textures-materials/nature/yughues-free-sand-materials-12964
+
+### Water Material
+Used as the side road textures in WaterZone, also used in HellZone with a different color palette.  
+Author: Bitgem  
+Source: https://assetstore.unity.com/packages/vfx/shaders/urp-stylized-water-shader-proto-series-187485
+
+### Water Obstacle Prefabs
+Prefabs used in WaterZone.  
+Author: 23 Space Robots and Counting...  
+Source: https://assetstore.unity.com/packages/3d/environments/free-low-poly-desert-pack-106709
+
+## HellZone Credits
+
+### Skybox
+Used as the HellZone skybox and background environment.  
+Asset from SeanDuffy  
+Source: https://assetstore.unity.com/packages/2d/textures-materials/galaxy-fire-skybox-10976
+
+## Songs Used
+
+LandZone: https://youtu.be/gr2OeMk2ysY?si=0MTmPbVRtY0n_yc8  
+WaterZone: https://youtu.be/yJ9j7o9L-SY?si=mLszAu_zvbR9sbcE  
+HellZone: https://youtu.be/5kh0HG6SgWc?si=4Z4Tj7X5g9DK_HYx  
+Title: https://youtu.be/2EeSqjeepu0?si=djH-5X7qkO3ufwML  
+Powerup (Invincibility theme): https://youtu.be/7fc-pZV3HO8?si=MtKhc7cfmeyDG45j
+
+## UI SFX
+
+Button click: https://pixabay.com/sound-effects/film-special-effects-ui-button-click-5-327756/  
+Gameover Jingle: https://pixabay.com/sound-effects/film-special-effects-game-over-arcade-6435/
+
+## Player SFX
+
+Jump: https://pixabay.com/tr/sound-effects/film-ve-%C3%B6zel-efektler-jump-sound-531048/  
+Coin Pickup: https://pixabay.com/tr/sound-effects/film-ve-%C3%B6zel-efektler-coin-257878/  
+Slide: https://pixabay.com/sound-effects/film-special-effects-human-impact-on-ground-6982/  
+Negative Coin Pickup: https://pixabay.com/sound-effects/film-special-effects-power-down-7103/  
+Special Coin Pickup: https://pixabay.com/sound-effects/film-special-effects-level-up-523624/  
+Getting Hit (Bonk): https://pixabay.com/sound-effects/film-special-effects-bonk-2-sfx-mrstokes302-435374/  
+Powerup: https://pixabay.com/sound-effects/film-special-effects-retro-powerup-2-236681/
+
+## 2D Assets
+
+2D assets were generated by ChatGPT.

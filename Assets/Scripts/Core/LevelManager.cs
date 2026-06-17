@@ -7,20 +7,20 @@ public class LevelManager : MonoBehaviour
     public static LevelManager Instance;
 
     [Header("Level Data List")]
-    [Tooltip("0. Eleman her zaman LAND zone olmalıdır!")]
+    [Tooltip("0. Eleman her zaman LAND zone olmalidir!")]
     public List<LevelData> levels = new List<LevelData>();
-    
-[Header("Transition Settings")]
-public int minScoreStep = 10;
-public int maxScoreStep = 15;
 
-private int currentScoreStep;
-private int nextLevelThreshold;
+    [Header("Transition Settings")]
+    public int minScoreStep = 10;
+    public int maxScoreStep = 15;
+    public float transitionPauseDuration = 0.45f;
+    public float transitionFadeDuration = 0.45f;
+    public Color transitionFadeColor = Color.black;
 
-public float transitionPauseDuration = 0.75f;
-
+    private int currentScoreStep;
+    private int nextLevelThreshold;
     private int currentLevelIndex = 0;
-    private int totalLevelsPassed = 0; 
+    private int totalLevelsPassed = 0;
     private ObjectSpawner spawner;
     private GroundLooper groundLooper;
     private bool isTransitioning = false;
@@ -37,144 +37,141 @@ public float transitionPauseDuration = 0.75f;
         }
     }
 
-    void Awake()
+    private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
 
-    void Start()
+    private void Start()
     {
         spawner = Object.FindFirstObjectByType<ObjectSpawner>();
         groundLooper = Object.FindFirstObjectByType<GroundLooper>();
-        
-currentLevelIndex = 0;
 
-currentScoreStep = Random.Range(minScoreStep, maxScoreStep + 1);
-nextLevelThreshold = currentScoreStep;
-
-if (levels.Count > 0)
-    UpdateSystems(levels[currentLevelIndex]);
-    }
-
-void Update()
-{
-    if (GameManager.Instance == null ||
-        !GameManager.Instance.isGameStarted ||
-        GameManager.Instance.isGameOver ||
-        levels.Count == 0 ||
-        isTransitioning)
-    {
-        return;
-    }
-
-    if (GameManager.Instance.score >= nextLevelThreshold)
-    {
-        totalLevelsPassed++;
-
+        currentLevelIndex = 0;
         currentScoreStep = Random.Range(minScoreStep, maxScoreStep + 1);
-        nextLevelThreshold += currentScoreStep;
+        nextLevelThreshold = currentScoreStep;
 
-        Debug.Log($"Next zone change at score: {nextLevelThreshold}");
-
-        SelectNextRandomLevelIndex();
-        StartCoroutine(NextLevelTransitionRoutine());
+        if (levels.Count > 0)
+        {
+            UpdateSystems(levels[currentLevelIndex]);
+        }
     }
-}
 
-    void SelectNextRandomLevelIndex()
+    private void Update()
+    {
+        if (GameManager.Instance == null ||
+            !GameManager.Instance.isGameStarted ||
+            GameManager.Instance.isGameOver ||
+            GameManager.Instance.isPaused ||
+            levels.Count == 0 ||
+            isTransitioning)
+        {
+            return;
+        }
+
+        if (GameManager.Instance.score >= nextLevelThreshold)
+        {
+            totalLevelsPassed++;
+            ScheduleNextThreshold();
+            SelectNextRandomLevelIndex();
+            StartCoroutine(NextLevelTransitionRoutine());
+        }
+    }
+
+    private void ScheduleNextThreshold()
+    {
+        int difficultyBonus = Mathf.FloorToInt(totalLevelsPassed * 0.35f);
+        currentScoreStep = Random.Range(minScoreStep, maxScoreStep + 1) + difficultyBonus;
+        nextLevelThreshold += currentScoreStep;
+        Debug.Log("Next zone change at score: " + nextLevelThreshold);
+    }
+
+    private void SelectNextRandomLevelIndex()
     {
         if (levels.Count <= 1) return;
 
         int nextIndex = currentLevelIndex;
-        while (nextIndex == currentLevelIndex)
+        int safety = 0;
+        while (nextIndex == currentLevelIndex && safety < 20)
         {
             nextIndex = Random.Range(0, levels.Count);
+            safety++;
         }
         currentLevelIndex = nextIndex;
     }
 
-    IEnumerator NextLevelTransitionRoutine()
+    private IEnumerator NextLevelTransitionRoutine()
     {
         isTransitioning = true;
-
         Time.timeScale = 0f;
 
-        if (GameManager.Instance != null && GameManager.Instance.fadePanel != null)
+        LevelData nextLevel = currentLevel;
+        if (GameManager.Instance != null && nextLevel != null)
         {
-            GameManager.Instance.fadePanel.gameObject.SetActive(true);
-            GameManager.Instance.fadePanel.enabled = true;
-            GameManager.Instance.fadePanel.raycastTarget = true; 
-
-            float fadeDuration = 0.4f;
-            float timer = 0f;
-
-            while (timer < fadeDuration)
-            {
-                timer += Time.unscaledDeltaTime; 
-                float progress = Mathf.Clamp01(timer / fadeDuration);
-                
-                GameManager.Instance.fadePanel.color = new Color(0f, 0f, 0f, progress);
-                
-                if (GameManager.Instance.inGameHUDCanvasGroup != null)
-                {
-                    GameManager.Instance.inGameHUDCanvasGroup.alpha = 1f - progress;
-                }
-                
-                yield return null;
-            }
-
-            GameManager.Instance.fadePanel.color = new Color(0f, 0f, 0f, 1f);
-            if (GameManager.Instance.inGameHUDCanvasGroup != null)
-            {
-                GameManager.Instance.inGameHUDCanvasGroup.alpha = 0f;
-            }
+            GameManager.Instance.ShowZoneAnnouncement(nextLevel);
         }
 
-        UpdateSystems(levels[currentLevelIndex]);
+        yield return FadeScreenRoutine(0f, 1f);
 
-        if (GameManager.Instance != null && currentLevel != null)
+        UpdateSystems(nextLevel);
+
+        if (MissionManager.Instance != null)
         {
-            GameManager.Instance.CheckAndShowZoneIntro(currentLevel);
+            MissionManager.Instance.RegisterZoneTransition();
+        }
+
+        if (GameManager.Instance != null && nextLevel != null)
+        {
+            GameManager.Instance.CheckAndShowZoneIntro(nextLevel);
         }
 
         yield return new WaitForSecondsRealtime(transitionPauseDuration);
 
         Time.timeScale = 1f;
-
-        if (GameManager.Instance != null && GameManager.Instance.fadePanel != null)
-        {
-            float fadeDuration = 0.4f;
-            float timer = 0f;
-
-            while (timer < fadeDuration)
-            {
-                timer += Time.unscaledDeltaTime;
-                float progress = Mathf.Clamp01(timer / fadeDuration);
-                
-                GameManager.Instance.fadePanel.color = new Color(0f, 0f, 0f, 1f - progress);
-                
-                if (GameManager.Instance.inGameHUDCanvasGroup != null)
-                {
-                    GameManager.Instance.inGameHUDCanvasGroup.alpha = progress;
-                }
-                
-                yield return null;
-            }
-            
-            GameManager.Instance.fadePanel.color = new Color(0f, 0f, 0f, 0f);
-            if (GameManager.Instance.inGameHUDCanvasGroup != null)
-            {
-                GameManager.Instance.inGameHUDCanvasGroup.alpha = 1f;
-            }
-            
-            GameManager.Instance.fadePanel.raycastTarget = false; 
-        }
+        yield return FadeScreenRoutine(1f, 0f);
 
         isTransitioning = false;
     }
 
-    void UpdateSystems(LevelData data)
+    private IEnumerator FadeScreenRoutine(float fromAlpha, float toAlpha)
+    {
+        if (GameManager.Instance == null || GameManager.Instance.fadePanel == null)
+        {
+            yield break;
+        }
+
+        GameManager.Instance.fadePanel.gameObject.SetActive(true);
+        GameManager.Instance.fadePanel.enabled = true;
+        GameManager.Instance.fadePanel.raycastTarget = toAlpha > fromAlpha;
+
+        float timer = 0f;
+        float duration = Mathf.Max(0.05f, transitionFadeDuration);
+
+        while (timer < duration)
+        {
+            timer += Time.unscaledDeltaTime;
+            float progress = Mathf.SmoothStep(0f, 1f, timer / duration);
+            float alpha = Mathf.Lerp(fromAlpha, toAlpha, progress);
+            GameManager.Instance.fadePanel.color = new Color(transitionFadeColor.r, transitionFadeColor.g, transitionFadeColor.b, alpha);
+
+            if (GameManager.Instance.inGameHUDCanvasGroup != null)
+            {
+                GameManager.Instance.inGameHUDCanvasGroup.alpha = 1f - alpha;
+            }
+
+            yield return null;
+        }
+
+        GameManager.Instance.fadePanel.color = new Color(transitionFadeColor.r, transitionFadeColor.g, transitionFadeColor.b, toAlpha);
+        if (GameManager.Instance.inGameHUDCanvasGroup != null)
+        {
+            GameManager.Instance.inGameHUDCanvasGroup.alpha = 1f - toAlpha;
+        }
+        GameManager.Instance.fadePanel.raycastTarget = toAlpha > 0.01f;
+    }
+
+    private void UpdateSystems(LevelData data)
     {
         if (data == null) return;
 
@@ -184,19 +181,19 @@ void Update()
         if (data.skyboxMaterial != null)
         {
             RenderSettings.skybox = data.skyboxMaterial;
-            DynamicGI.UpdateEnvironment(); 
+            DynamicGI.UpdateEnvironment();
         }
 
         if (spawner != null)
         {
             spawner.currentLevel = data;
-            spawner.ClearExistingObstacles(); 
+            spawner.ClearExistingObstacles();
         }
-        
+
         if (groundLooper != null)
         {
             groundLooper.currentLevel = data;
-            groundLooper.ApplyLevelMaterial(); 
+            groundLooper.ApplyLevelMaterial();
         }
 
         if (GameManager.Instance != null && GameManager.Instance.isGameStarted)

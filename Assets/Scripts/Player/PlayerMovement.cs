@@ -48,6 +48,12 @@ public class PlayerMovement : MonoBehaviour
     private Coroutine speedBoostRoutine;
     private Coroutine jumpBoostRoutine;
 
+    [Header("Touch / Swipe Input")]
+    public bool enableSwipeInput = true;
+    public float minSwipeDistance = 55f;
+    private Vector2 swipeStartPosition;
+    private bool swipeTracking;
+
     private float normalColliderHeight;
     private Vector3 normalColliderCenter;
 
@@ -76,6 +82,7 @@ public class PlayerMovement : MonoBehaviour
         isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance);
 
         HandleLaneInput();
+        HandleSwipeInput();
         HandleJumpAndSlideInput();
         HandleSlideTimer();
         HandleVisualSlidePose();
@@ -92,43 +99,102 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            if (desiredLane > 0) desiredLane--;
+            MoveLane(-1);
         }
 
         if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if (desiredLane < 2) desiredLane++;
+            MoveLane(1);
         }
+    }
+
+    void HandleSwipeInput()
+    {
+        if (!enableSwipeInput || Input.touchCount == 0) return;
+
+        Touch touch = Input.GetTouch(0);
+        if (touch.phase == TouchPhase.Began)
+        {
+            swipeTracking = true;
+            swipeStartPosition = touch.position;
+            return;
+        }
+
+        if (!swipeTracking || (touch.phase != TouchPhase.Ended && touch.phase != TouchPhase.Canceled)) return;
+
+        Vector2 swipeDelta = touch.position - swipeStartPosition;
+        swipeTracking = false;
+
+        if (swipeDelta.magnitude < minSwipeDistance) return;
+
+        if (Mathf.Abs(swipeDelta.x) > Mathf.Abs(swipeDelta.y))
+        {
+            MoveLane(swipeDelta.x > 0f ? 1 : -1);
+        }
+        else if (swipeDelta.y > 0f)
+        {
+            TryJump();
+        }
+        else
+        {
+            TrySlideOrFastFall();
+        }
+    }
+
+    void MoveLane(int direction)
+    {
+        desiredLane = Mathf.Clamp(desiredLane + direction, 0, 2);
     }
 
     void HandleJumpAndSlideInput()
     {
-        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded && !isSliding)
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow))
         {
-            float currentJumpMultiplier = 1f;
-
-            if (LevelManager.Instance != null && LevelManager.Instance.GetCurrentLevelData() != null)
-            {
-                currentJumpMultiplier = LevelManager.Instance.GetCurrentLevelData().jumpForceMultiplier;
-            }
-
-            Vector3 currentVelocity = rb.linearVelocity;
-            currentVelocity.y = jumpForce * currentJumpMultiplier * jumpBoostMultiplier;
-            rb.linearVelocity = currentVelocity;
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.jumpSFX);
+            TryJump();
         }
 
-        if ((Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) && canSlide)
+        if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
         {
-            if (isGrounded && !isSliding) StartSlide();
-            else if (!isGrounded)
-            {
-                Vector3 currentVelocity = rb.linearVelocity;
-                if (currentVelocity.y > 0f) currentVelocity.y = 0f;
-                currentVelocity.y -= fastFallSpeed;
-                rb.linearVelocity = currentVelocity;
-                slideQueuedFromAir = true;
-            }
+            TrySlideOrFastFall();
+        }
+    }
+
+    void TryJump()
+    {
+        if (!isGrounded || isSliding) return;
+
+        float currentJumpMultiplier = 1f;
+
+        if (LevelManager.Instance != null && LevelManager.Instance.GetCurrentLevelData() != null)
+        {
+            currentJumpMultiplier = LevelManager.Instance.GetCurrentLevelData().jumpForceMultiplier;
+        }
+
+        Vector3 currentVelocity = rb.linearVelocity;
+        currentVelocity.y = jumpForce * currentJumpMultiplier * jumpBoostMultiplier;
+        rb.linearVelocity = currentVelocity;
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayJumpSFX();
+        }
+    }
+
+    void TrySlideOrFastFall()
+    {
+        if (!canSlide) return;
+
+        if (isGrounded && !isSliding)
+        {
+            StartSlide();
+        }
+        else if (!isGrounded)
+        {
+            Vector3 currentVelocity = rb.linearVelocity;
+            if (currentVelocity.y > 0f) currentVelocity.y = 0f;
+            currentVelocity.y -= fastFallSpeed;
+            rb.linearVelocity = currentVelocity;
+            slideQueuedFromAir = true;
         }
     }
 
@@ -169,7 +235,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (velocity.y < 0f)
                 velocity.y += Physics.gravity.y * (fallMultiplier - 1f) * Time.fixedDeltaTime;
-            else if (!(Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.UpArrow)))
+            else if (!(Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.UpArrow)) && Input.touchCount == 0)
                 velocity.y += Physics.gravity.y * (jumpCutMultiplier - 1f) * Time.fixedDeltaTime;
 
             rb.linearVelocity = velocity;

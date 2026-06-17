@@ -6,6 +6,11 @@ public class PlayerCollision : MonoBehaviour
     [Header("Ayarlar")]
     public bool isInvincible = false;
     public Color powerUpColor = Color.black;
+    public int maxHealth = 3;
+    public float hitInvincibilityDuration = 1.25f;
+    public float powerUpDuration = 5f;
+    private int currentHealth;
+    private bool shieldActive;
     private Color originalColor;
     private SkinnedMeshRenderer meshRenderer;
 
@@ -26,28 +31,74 @@ public class PlayerCollision : MonoBehaviour
 
         playerMovement = GetComponent<PlayerMovement>();
         if (playerMovement == null) playerMovement = GetComponentInChildren<PlayerMovement>();
+
+        currentHealth = maxHealth;
+        NotifyHealthChanged();
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Obstacle") && !isInvincible)
+        if (collision.gameObject.CompareTag("Obstacle"))
         {
-            GameManager.Instance.GameOver();
+            TakeHit();
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Obstacle") && !isInvincible)
+        if (other.CompareTag("Obstacle"))
         {
-            GameManager.Instance.GameOver();
+            TakeHit();
         }
+    }
+
+    public void TakeHit()
+    {
+        if (isInvincible) return;
+
+        if (shieldActive)
+        {
+            shieldActive = false;
+            StartCoroutine(HitGraceRoutine());
+            NotifyHealthChanged();
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.ResetCombo();
+                GameManager.Instance.ShowNotification("SHIELD BLOCKED HIT!", Color.cyan);
+            }
+            return;
+        }
+
+        currentHealth--;
+        NotifyHealthChanged();
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ResetCombo();
+        }
+
+        if (currentHealth <= 0)
+        {
+            if (GameManager.Instance != null) GameManager.Instance.GameOver();
+            return;
+        }
+
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayBonkSFX();
+        if (GameManager.Instance != null) GameManager.Instance.ShowNotification("HIT! " + currentHealth + " HP LEFT", Color.red);
+        StartCoroutine(HitGraceRoutine());
     }
 
     public void StartInvincibility()
     {
-        StopAllCoroutines(); 
+        StopAllCoroutines();
         StartCoroutine(InvincibilityRoutine());
+    }
+
+    public void ActivateShield()
+    {
+        shieldActive = true;
+        NotifyHealthChanged();
+        if (GameManager.Instance != null) GameManager.Instance.ShowNotification("SHIELD READY!", Color.cyan);
     }
 
     private IEnumerator InvincibilityRoutine()
@@ -78,7 +129,7 @@ public class PlayerCollision : MonoBehaviour
 
         Debug.Log("Frenzy Modu BAŞLADI! Slide kilitlendi, engeller yok sayılıyor.");
 
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(powerUpDuration);
 
         isInvincible = false;
 
@@ -96,6 +147,26 @@ public class PlayerCollision : MonoBehaviour
 
         if (AudioManager.Instance != null) AudioManager.Instance.StopPowerUpAudio();
 
-        Debug.Log("Frenzy Modu BİTTİ! Slide açıldı, engeller tekrar katı.");
+        Debug.Log("Frenzy Modu BITTI! Slide acildi, engeller tekrar kati.");
+        NotifyHealthChanged();
+    }
+
+    private IEnumerator HitGraceRoutine()
+    {
+        isInvincible = true;
+        if (meshRenderer != null) meshRenderer.material.color = Color.red;
+
+        yield return new WaitForSeconds(hitInvincibilityDuration);
+
+        isInvincible = false;
+        if (meshRenderer != null) meshRenderer.material.color = originalColor;
+    }
+
+    private void NotifyHealthChanged()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.UpdateHealthUI(currentHealth, maxHealth, shieldActive);
+        }
     }
 }

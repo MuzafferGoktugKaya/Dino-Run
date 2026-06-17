@@ -3,48 +3,60 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections;
 using UnityEngine.UI;
-using System;
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public static bool shouldSkipTitle = false; 
+    public static bool shouldSkipTitle = false;
 
+    private const string HighScoreKey = "DinoRun.HighScore";
     private static int sessionHighScore = 0;
 
     [Header("UI Panelleri")]
     public GameObject titleScreenPanel;
     public GameObject inGameHUDPanel;
     public GameObject gameOverPanel;
+    public GameObject pausePanel;
     private Coroutine zoneIntroRoutine;
 
     [Header("Zone Bilgilendirme Paneli")]
-    public GameObject zoneIntroPanel; 
-    public TMP_Text zoneIntroText;    
+    public GameObject zoneIntroPanel;
+    public TMP_Text zoneIntroText;
 
-    [Header("HUD Fade Ayarı")]
+    [Header("HUD Fade Ayari")]
     public CanvasGroup inGameHUDCanvasGroup;
 
-    [Header("Game Over Sinematik Ayarları")]
-    public CanvasGroup gameOverTitleGroup; 
-    public CanvasGroup gameOverContentGroup; 
+    [Header("Game Over Sinematik Ayarlari")]
+    public CanvasGroup gameOverTitleGroup;
+    public CanvasGroup gameOverContentGroup;
 
-    [Header("Fade Ayarları")]
-    public Image fadePanel; 
+    [Header("Fade Ayarlari")]
+    public Image fadePanel;
+    public float sceneReloadFadeDuration = 0.35f;
 
     [Header("UI Metinleri")]
     public TMP_Text scoreText;
     public TMP_Text gameOverCurrentScoreText;
     public TMP_Text gameOverHighScoreText;
+    public TMP_Text healthText;
+    public TMP_Text comboText;
+    public TMP_Text missionText;
 
-    [Header("Bildirim (Notification) Ayarları")]
+    [Header("Combo Ayarlari")]
+    public float comboTimeout = 2.2f;
+    public int comboBonusEvery = 5;
+    private int currentCombo = 0;
+    private float lastComboTime = -99f;
+
+    [Header("Bildirim (Notification) Ayarlari")]
     public TMP_Text notificationText;
     private Coroutine notificationRoutine;
 
     [Header("Oyun Durumu")]
     public bool isGameStarted = false;
     public bool isGameOver = false;
+    public bool isPaused = false;
     public int score = 0;
 
     private HashSet<string> visitedZones = new HashSet<string>();
@@ -52,11 +64,13 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        sessionHighScore = PlayerPrefs.GetInt(HighScoreKey, sessionHighScore);
     }
 
     private void Start()
     {
         isGameOver = false;
+        isPaused = false;
 
         if (AudioManager.Instance != null)
         {
@@ -77,18 +91,21 @@ public class GameManager : MonoBehaviour
         }
 
         if (inGameHUDCanvasGroup != null) inGameHUDCanvasGroup.alpha = 1f;
-        if (zoneIntroPanel != null) zoneIntroPanel.SetActive(false); 
+        if (zoneIntroPanel != null) zoneIntroPanel.SetActive(false);
+        if (pausePanel != null) pausePanel.SetActive(false);
 
+        EnsureMissionManager();
         UpdateGameOverHighScoreUI();
+        UpdateComboUI();
 
         if (shouldSkipTitle)
         {
-            shouldSkipTitle = false; 
-            StartGame();             
+            shouldSkipTitle = false;
+            StartGame();
         }
         else
         {
-            Time.timeScale = 0f; 
+            Time.timeScale = 0f;
             isGameStarted = false;
 
             if (titleScreenPanel != null) titleScreenPanel.SetActive(true);
@@ -97,23 +114,54 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (!isGameStarted || isGameOver) return;
+
+        if (currentCombo > 0 && Time.unscaledTime - lastComboTime > comboTimeout)
+        {
+            ResetCombo();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+        {
+            TogglePause();
+        }
+    }
+
+    private void EnsureMissionManager()
+    {
+        MissionManager manager = MissionManager.Instance;
+        if (manager == null)
+        {
+            manager = gameObject.AddComponent<MissionManager>();
+        }
+
+        if (manager.missionText == null)
+        {
+            manager.missionText = missionText;
+        }
+    }
+
     public void StartGame()
     {
-        if (AudioManager.Instance != null) 
+        if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayButtonSFX();
-            AudioManager.Instance.StopBGM(); 
         }
 
         isGameStarted = true;
+        isPaused = false;
         Time.timeScale = 1f;
 
         if (titleScreenPanel != null) titleScreenPanel.SetActive(false);
         if (inGameHUDPanel != null) inGameHUDPanel.SetActive(true);
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (pausePanel != null) pausePanel.SetActive(false);
         if (inGameHUDCanvasGroup != null) inGameHUDCanvasGroup.alpha = 1f;
-        
+
         score = 0;
+        ResetCombo();
         UpdateScoreUI();
 
         if (LevelManager.Instance != null && LevelManager.Instance.currentLevel != null)
@@ -134,29 +182,29 @@ public class GameManager : MonoBehaviour
 
         notificationText.text = message;
         notificationText.color = textColor;
-
         notificationRoutine = StartCoroutine(NotificationFadeSequenceRoutine());
     }
 
     private IEnumerator NotificationFadeSequenceRoutine()
     {
-        float duration = 0.25f; 
+        float duration = 0.18f;
         float elapsed = 0f;
         Color c = notificationText.color;
 
         while (elapsed < duration)
         {
-            elapsed += Time.unscaledDeltaTime; 
+            elapsed += Time.unscaledDeltaTime;
             c.a = Mathf.Lerp(0f, 1f, elapsed / duration);
             notificationText.color = c;
             yield return null;
         }
+
         c.a = 1f;
         notificationText.color = c;
 
-        yield return new WaitForSecondsRealtime(0.8f);
+        yield return new WaitForSecondsRealtime(0.9f);
 
-        duration = 0.4f;
+        duration = 0.35f;
         elapsed = 0f;
         while (elapsed < duration)
         {
@@ -165,56 +213,67 @@ public class GameManager : MonoBehaviour
             notificationText.color = c;
             yield return null;
         }
+
         c.a = 0f;
         notificationText.color = c;
+    }
+
+    public void ShowZoneAnnouncement(LevelData zoneData)
+    {
+        if (zoneData == null) return;
+
+        string zoneName = string.IsNullOrEmpty(zoneData.displayName) ? zoneData.name : zoneData.displayName;
+        string message = string.IsNullOrEmpty(zoneData.transitionMessage) ? "Entering " + zoneName : zoneData.transitionMessage;
+        ShowNotification(message, zoneData.themeColor);
     }
 
     public void CheckAndShowZoneIntro(LevelData zoneData)
     {
         if (zoneData == null) return;
-        string uniqueZoneKey = zoneData.name; 
+        string uniqueZoneKey = zoneData.name;
 
         if (!visitedZones.Contains(uniqueZoneKey))
         {
-            visitedZones.Add(uniqueZoneKey); 
+            visitedZones.Add(uniqueZoneKey);
 
             if (!string.IsNullOrEmpty(zoneData.firstTimeDescription))
             {
                 if (zoneIntroRoutine != null) StopCoroutine(zoneIntroRoutine);
-                zoneIntroRoutine = StartCoroutine(ShowZoneIntroRoutine(zoneData.firstTimeDescription));
+                zoneIntroRoutine = StartCoroutine(ShowZoneIntroRoutine(zoneData));
             }
         }
     }
 
-    private IEnumerator ShowZoneIntroRoutine(string message)
+    private IEnumerator ShowZoneIntroRoutine(LevelData zoneData)
     {
         if (zoneIntroPanel == null || zoneIntroText == null) yield break;
 
-        zoneIntroText.text = message;
+        string zoneName = string.IsNullOrEmpty(zoneData.displayName) ? zoneData.name : zoneData.displayName;
+        zoneIntroText.text = zoneName + "\n" + zoneData.firstTimeDescription;
         zoneIntroPanel.SetActive(true);
 
         CanvasGroup panelGroup = zoneIntroPanel.GetComponent<CanvasGroup>();
         if (panelGroup != null)
         {
             float t = 0f;
-            while (t < 0.5f)
+            while (t < 0.35f)
             {
-                t += Time.deltaTime;
-                panelGroup.alpha = Mathf.Clamp01(t / 0.5f);
+                t += Time.unscaledDeltaTime;
+                panelGroup.alpha = Mathf.SmoothStep(0f, 1f, t / 0.35f);
                 yield return null;
             }
             panelGroup.alpha = 1f;
         }
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSecondsRealtime(2.4f);
 
         if (panelGroup != null)
         {
             float t = 0f;
-            while (t < 0.5f)
+            while (t < 0.35f)
             {
-                t += Time.deltaTime;
-                panelGroup.alpha = Mathf.Clamp01(1f - (t / 0.5f));
+                t += Time.unscaledDeltaTime;
+                panelGroup.alpha = Mathf.SmoothStep(1f, 0f, t / 0.35f);
                 yield return null;
             }
             panelGroup.alpha = 0f;
@@ -228,6 +287,36 @@ public class GameManager : MonoBehaviour
         if (isGameOver || !isGameStarted) return;
         score += amount;
         UpdateScoreUI();
+    }
+
+    public void RegisterCoinPickup(int scoreAmount)
+    {
+        if (isGameOver || !isGameStarted) return;
+
+        AddScore(scoreAmount);
+        currentCombo++;
+        lastComboTime = Time.unscaledTime;
+
+        if (MissionManager.Instance != null)
+        {
+            MissionManager.Instance.RegisterCoinCollected();
+            MissionManager.Instance.RegisterCombo(currentCombo);
+        }
+
+        if (comboBonusEvery > 0 && currentCombo % comboBonusEvery == 0)
+        {
+            int bonus = currentCombo / comboBonusEvery;
+            AddScore(bonus);
+            ShowNotification("COMBO x" + currentCombo + " +" + bonus, Color.cyan);
+        }
+
+        UpdateComboUI();
+    }
+
+    public void ResetCombo()
+    {
+        currentCombo = 0;
+        UpdateComboUI();
     }
 
     public void RemoveScore(int amount)
@@ -244,6 +333,24 @@ public class GameManager : MonoBehaviour
             scoreText.text = "Score: " + score;
     }
 
+    public void UpdateHealthUI(int currentHealth, int maxHealth, bool shieldActive)
+    {
+        if (healthText != null)
+        {
+            healthText.text = shieldActive
+                ? "Health: " + currentHealth + "/" + maxHealth + "  SHIELD"
+                : "Health: " + currentHealth + "/" + maxHealth;
+        }
+    }
+
+    private void UpdateComboUI()
+    {
+        if (comboText != null)
+        {
+            comboText.text = currentCombo > 1 ? "Combo x" + currentCombo : string.Empty;
+        }
+    }
+
     private void UpdateGameOverHighScoreUI()
     {
         if (gameOverHighScoreText != null)
@@ -256,53 +363,62 @@ public class GameManager : MonoBehaviour
     {
         if (isGameOver) return;
         isGameOver = true;
-        Time.timeScale = 0f; 
+        isPaused = false;
+        Time.timeScale = 0f;
 
         if (AudioManager.Instance != null)
         {
-            AudioManager.Instance.StopBGM();
+            AudioManager.Instance.StopBGMWithFade(0.35f);
             AudioManager.Instance.PlayBonkSFX();
         }
-        if (score > sessionHighScore)
+
+        ResetCombo();
+
+        bool newBest = score > sessionHighScore;
+        if (newBest)
         {
             sessionHighScore = score;
+            PlayerPrefs.SetInt(HighScoreKey, sessionHighScore);
+            PlayerPrefs.Save();
         }
 
-        StartCoroutine(GameOverSequenceRoutine());
+        StartCoroutine(GameOverSequenceRoutine(newBest));
     }
 
-    private IEnumerator GameOverSequenceRoutine()
+    private IEnumerator GameOverSequenceRoutine(bool newBest)
     {
         if (gameOverTitleGroup != null) gameOverTitleGroup.alpha = 0f;
         if (gameOverContentGroup != null) gameOverContentGroup.alpha = 0f;
 
         if (inGameHUDPanel != null) inGameHUDPanel.SetActive(false);
+        if (pausePanel != null) pausePanel.SetActive(false);
         if (gameOverPanel != null) gameOverPanel.SetActive(true);
 
-        if (gameOverCurrentScoreText != null) gameOverCurrentScoreText.text = "Score: " + score;
+        if (gameOverCurrentScoreText != null)
+        {
+            gameOverCurrentScoreText.text = newBest ? "Score: " + score + "  NEW BEST!" : "Score: " + score;
+        }
         UpdateGameOverHighScoreUI();
 
         yield return new WaitForSecondsRealtime(0.15f);
-        
+
         if (AudioManager.Instance != null) AudioManager.Instance.PlayGameOverJingle();
 
-        yield return null;
-
-        float fadeDuration = 0.8f; 
+        float fadeDuration = 0.65f;
         float timer = 0f;
-        
+
         while (timer < fadeDuration)
         {
-            timer += Time.unscaledDeltaTime; 
+            timer += Time.unscaledDeltaTime;
             if (gameOverTitleGroup != null)
             {
-                gameOverTitleGroup.alpha = Mathf.Clamp01(timer / fadeDuration);
+                gameOverTitleGroup.alpha = Mathf.SmoothStep(0f, 1f, timer / fadeDuration);
             }
             yield return null;
         }
         if (gameOverTitleGroup != null) gameOverTitleGroup.alpha = 1f;
 
-        yield return new WaitForSecondsRealtime(0.5f);
+        yield return new WaitForSecondsRealtime(0.25f);
 
         timer = 0f;
         while (timer < fadeDuration)
@@ -310,100 +426,75 @@ public class GameManager : MonoBehaviour
             timer += Time.unscaledDeltaTime;
             if (gameOverContentGroup != null)
             {
-                gameOverContentGroup.alpha = Mathf.Clamp01(timer / fadeDuration);
+                gameOverContentGroup.alpha = Mathf.SmoothStep(0f, 1f, timer / fadeDuration);
             }
             yield return null;
         }
         if (gameOverContentGroup != null) gameOverContentGroup.alpha = 1f;
     }
 
+    public void TogglePause()
+    {
+        if (isPaused) ResumeGame();
+        else PauseGame();
+    }
+
+    public void PauseGame()
+    {
+        if (!isGameStarted || isGameOver || isPaused) return;
+        isPaused = true;
+        Time.timeScale = 0f;
+        if (pausePanel != null) pausePanel.SetActive(true);
+        ShowNotification("Paused", Color.white);
+    }
+
+    public void ResumeGame()
+    {
+        if (!isPaused) return;
+        isPaused = false;
+        Time.timeScale = 1f;
+        if (pausePanel != null) pausePanel.SetActive(false);
+    }
+
     public void RestartGame()
     {
         if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonSFX();
-        shouldSkipTitle = true; 
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        shouldSkipTitle = true;
+        StartCoroutine(ReloadSceneRoutine());
     }
 
     public void GoToTitle()
     {
         if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonSFX();
-        shouldSkipTitle = false; 
+        shouldSkipTitle = false;
+        StartCoroutine(ReloadSceneRoutine());
+    }
+
+    private IEnumerator ReloadSceneRoutine()
+    {
         Time.timeScale = 1f;
+
+        if (fadePanel != null)
+        {
+            fadePanel.raycastTarget = true;
+            float timer = 0f;
+            while (timer < sceneReloadFadeDuration)
+            {
+                timer += Time.unscaledDeltaTime;
+                float progress = Mathf.Clamp01(timer / sceneReloadFadeDuration);
+                fadePanel.color = new Color(0f, 0f, 0f, progress);
+                yield return null;
+            }
+        }
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void ExitGame()
     {
         if (AudioManager.Instance != null) AudioManager.Instance.PlayButtonSFX();
-        Debug.Log("Oyundan çıkılıyor...");
+        Debug.Log("Oyundan cikiliyor...");
         Application.Quit();
-    }
-
-    public void TriggerZoneTransition(Action zoneSwitchLogic)
-    {
-        if (fadePanel != null)
-        {
-            StartCoroutine(FadeRoutine(zoneSwitchLogic));
-        }
-        else
-        {
-            zoneSwitchLogic?.Invoke();
-        }
-    }
-
-    private IEnumerator FadeRoutine(Action zoneSwitchLogic)
-    {
-        fadePanel.raycastTarget = true;
-        float duration = 0.4f;
-        float timer = 0f;
-
-        while (timer < duration)
-        {
-            timer += Time.unscaledDeltaTime; 
-            float progress = Mathf.Clamp01(timer / duration);
-            
-            fadePanel.color = new Color(0f, 0f, 0f, progress);
-            
-            if (inGameHUDCanvasGroup != null) 
-                inGameHUDCanvasGroup.alpha = 1f - progress;
-
-            yield return null;
-        }
-        
-        fadePanel.color = new Color(0f, 0f, 0f, 1f);
-        if (inGameHUDCanvasGroup != null) inGameHUDCanvasGroup.alpha = 0f;
-
-        if (zoneSwitchLogic != null)
-        {
-            zoneSwitchLogic.Invoke(); 
-        }
-
-        yield return new WaitForSecondsRealtime(0.2f); 
-
-        if (LevelManager.Instance != null && LevelManager.Instance.currentLevel != null)
-        {
-            CheckAndShowZoneIntro(LevelManager.Instance.currentLevel);
-        }
-
-        timer = 0f;
-        while (timer < duration)
-        {
-            timer += Time.unscaledDeltaTime;
-            float progress = Mathf.Clamp01(timer / duration);
-            
-            fadePanel.color = new Color(0f, 0f, 0f, 1f - progress);
-            
-            if (inGameHUDCanvasGroup != null) 
-                inGameHUDCanvasGroup.alpha = progress;
-
-            yield return null;
-        }
-
-        fadePanel.color = new Color(0f, 0f, 0f, 0f);
-        if (inGameHUDCanvasGroup != null) inGameHUDCanvasGroup.alpha = 1f;
-
-        fadePanel.raycastTarget = false;
     }
 
     public void PlaySFX(AudioClip clip)

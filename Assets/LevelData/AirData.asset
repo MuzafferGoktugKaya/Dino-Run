@@ -14,10 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelData
   roadMaterial: {fileID: 0}
   sideMaterial: {fileID: 0}
+  themeColor:
+    r: 0.46
+    g: 0.74
+    b: 1
+    a: 1
   skyboxMaterial: {fileID: 0}
   zoneBGM: {fileID: 8300000, guid: 7a78555be98c3964fbf96a105acfd99f, type: 3}
   isAirZone: 1
+  displayName: AirZone
   firstTimeDescription: 
+  transitionMessage: Entering AirZone - keep your stamina alive!
   coinPrefab: {fileID: 0}
   ObstaclePrefab1: {fileID: 0}
   ObstaclePrefab2: {fileID: 0}
